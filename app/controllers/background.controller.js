@@ -1,19 +1,24 @@
-const db = require("../models");
+const db = require("../db/models");
 const Background = db.background;
 const Op = db.Sequelize.Op;
+const fs = require("fs");
 
 // Create and Save a new Background
 exports.create = (req, res) => {
   // Create a Background
   const background = {
     name: req.body.name,
-    image: req.file.path,
+    image: req.file === undefined ? "" : req.file.path,
+    invitationId: req.body.invitationId,
   };
 
   // Save Background in the database
   Background.create(background)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -28,9 +33,15 @@ exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  Background.findAll({ where: condition })
+  Background.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -44,10 +55,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Background.findByPk(id)
+  Background.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Background with id=${id}.`,
@@ -64,24 +81,36 @@ exports.findOne = (req, res) => {
 // Update a Background by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Background.update(req.body, {
+  Background.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Background was updated successfully.",
-        });
-      } else {
-        res.send({
-          message: `Cannot update Background with id=${id}. Maybe Background was not found or req.body is empty!`,
+    .then((data) => {
+      if (req.file !== undefined) {
+        fs.unlink(data.image, (err) => {
+          if (err) throw err;
         });
       }
+      data
+        .update({
+          name: req.body.name,
+          image: req.file === undefined ? data.image : req.file.path,
+        })
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Background with id=" + id,
+          });
+        });
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Background with id=" + id,
+      res.send({
+        message: `Cannot update Background with id=${id}. Maybe Background was not found or req.body is empty!`,
       });
     });
 };
@@ -90,19 +119,27 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Background.destroy({
+  Background.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Background was deleted successfully!",
+    .then((data) => {
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+          fs.unlink(data.image, (err) => {
+            if (err) throw err;
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Background with id=${id}. Maybe Background was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Background with id=${id}. Maybe Background was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -124,20 +161,6 @@ exports.deleteAll = (req, res) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while removing all.background.",
-      });
-    });
-};
-
-// find all published Background
-exports.findAllPublished = (req, res) => {
-  Background.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving.background.",
       });
     });
 };

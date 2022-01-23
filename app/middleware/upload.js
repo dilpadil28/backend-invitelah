@@ -1,13 +1,14 @@
 const util = require("util");
 const path = require("path");
 const multer = require("multer");
+var maxSize = 2 * 1024 * 1024;
 
 var storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "upload/images");
   },
   filename: (req, file, callback) => {
-    const match = ["image/png", "image/jpeg", "image/jpg"];
+    const match = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
 
     if (match.indexOf(file.mimetype) === -1) {
       var message = `${file.originalname} is invalid. Only accept png/jpg/jpeg.`;
@@ -19,6 +20,10 @@ var storage = multer.diskStorage({
   },
 });
 
-var uploadFiles = multer({ storage: storage }).single("image");
+var uploadFiles = multer({
+  storage: storage,
+  limits: { fileSize: maxSize },
+}).single("image");
+
 var uploadFilesMiddleware = util.promisify(uploadFiles);
 module.exports = uploadFilesMiddleware;

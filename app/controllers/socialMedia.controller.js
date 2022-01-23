@@ -1,27 +1,16 @@
-const db = require("../models");
+const db = require("../db/models");
 const SocialMedia = db.socialMedia;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new SocialMedia
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a SocialMedia
-  const socialMedia = {
-    name: req.body.name,
-    url: req.body.url,
-  };
-
   // Save SocialMedia in the database
-  SocialMedia.create(socialMedia)
+  SocialMedia.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -31,14 +20,20 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Fiturs from the database.
+// Retrieve all SocialMedias from the database.
 exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  SocialMedia.findAll({ where: condition })
+  SocialMedia.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -52,10 +47,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  SocialMedia.findByPk(id)
+  SocialMedia.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find SocialMedia with id=${id}.`,
@@ -72,24 +73,28 @@ exports.findOne = (req, res) => {
 // Update a SocialMedia by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  SocialMedia.update(req.body, {
+  SocialMedia.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "SocialMedia was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating SocialMedia with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update SocialMedia with id=${id}. Maybe SocialMedia was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating SocialMedia with id=" + id,
+      res.send({
+        message: `Cannot update SocialMedia with id=${id}. Maybe SocialMedia was not found or req.body is empty!`,
       });
     });
 };
@@ -98,19 +103,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  SocialMedia.destroy({
+  SocialMedia.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "SocialMedia was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete SocialMedia with id=${id}. Maybe SocialMedia was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete SocialMedia with id=${id}. Maybe SocialMedia was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -119,33 +130,21 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Fiturs from the database.
+// Delete all SocialMedias from the database.
 exports.deleteAll = (req, res) => {
   SocialMedia.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Fiturs were deleted successfully!` });
+      res.send({
+        message: `${nums} SocialMedias were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while removing all.socialMedia.",
-      });
-    });
-};
-
-// find all published SocialMedia
-exports.findAllPublished = (req, res) => {
-  SocialMedia.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving.socialMedia.",
       });
     });
 };

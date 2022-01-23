@@ -4,16 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Fitur
 exports.create = (req, res) => {
-  // Create a Fitur
-  const fitur = {
-    name: req.body.name,
-    image: req.body.image,
-  };
-
   // Save Fitur in the database
-  Fitur.create(fitur)
+  Fitur.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -24,12 +21,18 @@ exports.create = (req, res) => {
 
 // Retrieve all Fiturs from the database.
 exports.findAll = (req, res) => {
-  const name = req.query.name;
-  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+  const title = req.query.title;
+  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Fitur.findAll({ where: condition })
+  Fitur.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -42,10 +45,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Fitur.findByPk(id)
+  Fitur.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Fitur with id=${id}.`,
@@ -62,24 +71,28 @@ exports.findOne = (req, res) => {
 // Update a Fitur by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Fitur.update(req.body, {
+  Fitur.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Fitur was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Fitur with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Fitur with id=${id}. Maybe Fitur was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Fitur with id=" + id,
+      res.send({
+        message: `Cannot update Fitur with id=${id}. Maybe Fitur was not found or req.body is empty!`,
       });
     });
 };
@@ -88,19 +101,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Fitur.destroy({
+  Fitur.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Fitur was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Fitur with id=${id}. Maybe Fitur was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Fitur with id=${id}. Maybe Fitur was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -116,24 +135,13 @@ exports.deleteAll = (req, res) => {
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Fiturs were deleted successfully!` });
+      res.send({
+        message: `${nums} Fiturs were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message: err.message || "Some error occurred while removing all.fitur.",
-      });
-    });
-};
-
-// find all published Fitur
-exports.findAllPublished = (req, res) => {
-  Fitur.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving.fitur.",
       });
     });
 };

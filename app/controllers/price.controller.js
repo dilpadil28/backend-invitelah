@@ -4,28 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Price
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.title) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a Price
-  const price = {
-    title: req.body.title,
-    description: req.body.description,
-    discount: req.body.discount,
-    discountTitle: req.body.discountTitle,
-    discountDescription: req.body.discountDescription,
-    discountExpired: req.body.discountExpired,
-  };
-
   // Save Price in the database
-  Price.create(price)
+  Price.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -34,18 +19,24 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Fiturs from the database.
+// Retrieve all Prices from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Price.findAll({ where: condition })
+  Price.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving price.",
+        message: err.message || "Some error occurred while retrieving price;.",
       });
     });
 };
@@ -54,10 +45,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Price.findByPk(id)
+  Price.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Price with id=${id}.`,
@@ -74,24 +71,28 @@ exports.findOne = (req, res) => {
 // Update a Price by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Price.update(req.body, {
+  Price.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Price was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Price with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Price with id=${id}. Maybe Price was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Price with id=" + id,
+      res.send({
+        message: `Cannot update Price with id=${id}. Maybe Price was not found or req.body is empty!`,
       });
     });
 };
@@ -100,19 +101,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Price.destroy({
+  Price.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Price was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Price with id=${id}. Maybe Price was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Price with id=${id}. Maybe Price was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -121,31 +128,21 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Fiturs from the database.
+// Delete all Prices from the database.
 exports.deleteAll = (req, res) => {
   Price.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Fiturs were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while removing all.price.",
+      res.send({
+        message: `${nums} Prices were deleted successfully!`,
       });
-    });
-};
-
-// find all published Price
-exports.findAllPublished = (req, res) => {
-  Price.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving.price.",
+        message:
+          err.message || "Some error occurred while removing all.price;.",
       });
     });
 };

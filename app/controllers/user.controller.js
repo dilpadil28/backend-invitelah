@@ -1,28 +1,16 @@
-const db = require("../models");
+const db = require("../db/models");
 const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new User
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.username) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a User
-  const user = {
-    username: req.body.username,
-    description: req.body.description,
-    published: req.body.published ? req.body.published : false,
-  };
-
   // Save User in the database
-  User.create(user)
+  User.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -38,13 +26,19 @@ exports.findAll = (req, res) => {
     ? { username: { [Op.like]: `%${username}%` } }
     : null;
 
-  User.findAll({ where: condition })
+  User.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving users.",
+        message: err.message || "Some error occurred while retrieving user.",
       });
     });
 };
@@ -53,10 +47,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  User.findByPk(id)
+  User.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find User with id=${id}.`,
@@ -73,24 +73,28 @@ exports.findOne = (req, res) => {
 // Update a User by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  User.update(req.body, {
+  User.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "User was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating User with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating User with id=" + id,
+      res.send({
+        message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`,
       });
     });
 };
@@ -99,19 +103,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  User.destroy({
+  User.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "User was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete User with id=${id}. Maybe User was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete User with id=${id}. Maybe User was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -127,24 +137,13 @@ exports.deleteAll = (req, res) => {
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Users were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while removing all users.",
+      res.send({
+        message: `${nums} Users were deleted successfully!`,
       });
-    });
-};
-
-// find all published User
-exports.findAllPublished = (req, res) => {
-  User.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving users.",
+        message: err.message || "Some error occurred while removing all.user.",
       });
     });
 };

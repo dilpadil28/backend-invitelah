@@ -4,41 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Invitation
 exports.create = (req, res) => {
-  // Create a Invitation
-  const invitation = {
-    slug: req.body.slug,
-    namaPria: req.body.namaPria,
-    namaPendekPria: req.body.namaPendekPria,
-    namaOrangTuaPria: req.body.namaOrangTuaPria,
-    namaWanita: req.body.namaWanita,
-    namaPendekWanita: req.body.namaPendekWanita,
-    namaOrangTuaWanita: req.body.namaOrangTuaWanita,
-    avatar: req.body.avatar,
-    alamatKado: req.body.alamatKado,
-    tanggalNikah: req.body.tanggalNikah,
-    jamNikah: req.body.jamNikah,
-    alamatNikah: req.body.alamatNikah,
-    mapsNikah: req.body.mapsNikah,
-    tanggalResepsi: req.body.tanggalResepsi,
-    jamResepsi: req.body.jamResepsi,
-    alamatResepsi: req.body.alamatResepsi,
-    mapsResepsi: req.body.mapsResepsi,
-    namaTema: req.body.namaTema,
-    bissmillah: req.body.bissmillah,
-    salamPembuka: req.body.salamPembuka,
-    salamPembukaDeskripsi: req.body.salamPembukaDeskripsi,
-    salamPenutup: req.body.salamPenutup,
-    salamPenutupDeskripsi: req.body.salamPenutupDeskripsi,
-    doa: req.body.doa,
-    tipeGaleri: req.body.tipeGaleri,
-    backgroundModal: req.body.backgroundModal,
-    turutMengundang: req.body.turutMengundang,
-  };
-
   // Save Invitation in the database
-  Invitation.create(invitation)
+  Invitation.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -48,14 +20,20 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Backgrounds from the database.
+// Retrieve all Invitations from the database.
 exports.findAll = (req, res) => {
   const slug = req.query.slug;
   var condition = slug ? { slug: { [Op.like]: `%${slug}%` } } : null;
 
-  Invitation.findAll({ where: condition })
+  Invitation.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -69,10 +47,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Invitation.findByPk(id)
+  Invitation.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Invitation with id=${id}.`,
@@ -89,24 +73,28 @@ exports.findOne = (req, res) => {
 // Update a Invitation by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Invitation.update(req.body, {
+  Invitation.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Invitation was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Invitation with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Invitation with id=${id}. Maybe Invitation was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Invitation with id=" + id,
+      res.send({
+        message: `Cannot update Invitation with id=${id}. Maybe Invitation was not found or req.body is empty!`,
       });
     });
 };
@@ -115,19 +103,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Invitation.destroy({
+  Invitation.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Invitation was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Invitation with id=${id}. Maybe Invitation was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Invitation with id=${id}. Maybe Invitation was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -136,33 +130,21 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Backgrounds from the database.
+// Delete all Invitations from the database.
 exports.deleteAll = (req, res) => {
   Invitation.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Backgrounds were deleted successfully!` });
+      res.send({
+        message: `${nums} Invitations were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
           err.message || "Some error occurred while removing all.invitation.",
-      });
-    });
-};
-
-// find all published Invitation
-exports.findAllPublished = (req, res) => {
-  Invitation.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving.invitation.",
       });
     });
 };

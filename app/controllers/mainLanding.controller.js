@@ -1,150 +1,150 @@
 const db = require("../models");
-const Fitur = db.mainLanding;
+const MainLanding = db.mainLanding;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Fitur
+// Create and Save a new MainLanding
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a Fitur
-  const mainLanding = {
-    name: req.body.name,
-    image: req.body.image,
-  };
-
-  // Save Fitur in the database
-  Fitur.create(mainLanding)
+  // Save MainLanding in the database
+  MainLanding.create(req.body)
     .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the Fitur.",
+      res.status(201).json({
+        message: "success",
+        data: data,
       });
-    });
-};
-
-// Retrieve all MainLanding from the database.
-exports.findAll = (req, res) => {
-  const name = req.query.name;
-  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
-
-  Fitur.findAll({ where: condition })
-    .then((data) => {
-      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving mainLanding.",
+          err.message || "Some error occurred while creating the MainLanding.",
       });
     });
 };
 
-// Find a single Fitur with an id
+// Retrieve all MainLandings from the database.
+exports.findAll = (req, res) => {
+  const title = req.query.title;
+  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
+
+  MainLanding.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving mainLanding;.",
+      });
+    });
+};
+
+// Find a single MainLanding with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Fitur.findByPk(id)
+  MainLanding.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
-          message: `Cannot find Fitur with id=${id}.`,
+          message: `Cannot find MainLanding with id=${id}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving Fitur with id=" + id,
+        message: "Error retrieving MainLanding with id=" + id,
       });
     });
 };
 
-// Update a Fitur by the id in the request
+// Update a MainLanding by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Fitur.update(req.body, {
+  MainLanding.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Fitur was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating MainLanding with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Fitur with id=${id}. Maybe Fitur was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Fitur with id=" + id,
+      res.send({
+        message: `Cannot update MainLanding with id=${id}. Maybe MainLanding was not found or req.body is empty!`,
       });
     });
 };
 
-// Delete a Fitur with the specified id in the request
+// Delete a MainLanding with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Fitur.destroy({
+  MainLanding.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Fitur was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete MainLanding with id=${id}. Maybe MainLanding was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Fitur with id=${id}. Maybe Fitur was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Fitur with id=" + id,
+        message: "Could not delete MainLanding with id=" + id,
       });
     });
 };
 
-// Delete all MainLanding from the database.
+// Delete all MainLandings from the database.
 exports.deleteAll = (req, res) => {
-  Fitur.destroy({
+  MainLanding.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} MainLanding were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all.mainLanding.",
+      res.send({
+        message: `${nums} MainLandings were deleted successfully!`,
       });
-    });
-};
-
-// find all published Fitur
-exports.findAllPublished = (req, res) => {
-  Fitur.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving.mainLanding.",
+          err.message || "Some error occurred while removing all.mainLanding;.",
       });
     });
 };

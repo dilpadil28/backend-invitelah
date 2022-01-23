@@ -1,153 +1,169 @@
-const db = require("../models");
-const Testimonial = db.testimonial;
+const db = require("../db/models");
+const Background = db.background;
 const Op = db.Sequelize.Op;
+const fs = require("fs");
 
-// Create and Save a new Testimonial
+// Create and Save a new Background
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a Testimonial
-  const testimonial = {
+  // Create a Background
+  const background = {
     name: req.body.name,
-    description: req.body.description,
+    descrtiption: req.body.descrtiption,
     rating: req.body.rating,
-    image: req.body.image,
+    image: req.file === undefined ? "" : req.file.path,
   };
 
-  // Save Testimonial in the database
-  Testimonial.create(testimonial)
+  // Save Background in the database
+  Background.create(background)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Testimonial.",
+          err.message || "Some error occurred while creating the Background.",
       });
     });
 };
 
-// Retrieve all Testimonials from the database.
+// Retrieve all Backgrounds from the database.
 exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  Testimonial.findAll({ where: condition })
+  Background.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving testimonial.",
+          err.message || "Some error occurred while retrieving background.",
       });
     });
 };
 
-// Find a single Testimonial with an id
+// Find a single Background with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Testimonial.findByPk(id)
+  Background.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
-          message: `Cannot find Testimonial with id=${id}.`,
+          message: `Cannot find Background with id=${id}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving Testimonial with id=" + id,
+        message: "Error retrieving Background with id=" + id,
       });
     });
 };
 
-// Update a Testimonial by the id in the request
+// Update a Background by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Testimonial.update(req.body, {
+  Background.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Testimonial was updated successfully.",
-        });
-      } else {
-        res.send({
-          message: `Cannot update Testimonial with id=${id}. Maybe Testimonial was not found or req.body is empty!`,
+    .then((data) => {
+      if (req.file !== undefined) {
+        fs.unlink(data.image, (err) => {
+          if (err) throw err;
         });
       }
+      data
+        .update({
+          name: req.body.name,
+          descrtiption: req.body.descrtiption,
+          rating: req.body.rating,
+          image: req.file === undefined ? data.image : req.file.path,
+        })
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Background with id=" + id,
+          });
+        });
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Testimonial with id=" + id,
+      res.send({
+        message: `Cannot update Background with id=${id}. Maybe Background was not found or req.body is empty!`,
       });
     });
 };
 
-// Delete a Testimonial with the specified id in the request
+// Delete a Background with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Testimonial.destroy({
+  Background.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Testimonial was deleted successfully!",
+    .then((data) => {
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+          fs.unlink(data.image, (err) => {
+            if (err) throw err;
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Background with id=${id}. Maybe Background was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Testimonial with id=${id}. Maybe Testimonial was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Testimonial with id=" + id,
+        message: "Could not delete Background with id=" + id,
       });
     });
 };
 
-// Delete all Testimonials from the database.
+// Delete all Backgrounds from the database.
 exports.deleteAll = (req, res) => {
-  Testimonial.destroy({
+  Background.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Testimonials were deleted successfully!` });
+      res.send({ message: `${nums} Backgrounds were deleted successfully!` });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all.testimonial.",
-      });
-    });
-};
-
-// find all published Testimonial
-exports.findAllPublished = (req, res) => {
-  Testimonial.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving.testimonial.",
+          err.message || "Some error occurred while removing all.background.",
       });
     });
 };

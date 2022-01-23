@@ -4,16 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Faq
 exports.create = (req, res) => {
-  // Create a Faq
-  const faq = {
-    title: req.body.title,
-    description: req.body.description,
-  };
-
   // Save Faq in the database
-  Faq.create(faq)
+  Faq.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -27,9 +24,15 @@ exports.findAll = (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Faq.findAll({ where: condition })
+  Faq.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -42,10 +45,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Faq.findByPk(id)
+  Faq.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Faq with id=${id}.`,
@@ -62,24 +71,28 @@ exports.findOne = (req, res) => {
 // Update a Faq by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Faq.update(req.body, {
+  Faq.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Faq was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Faq with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Faq with id=${id}. Maybe Faq was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Faq with id=" + id,
+      res.send({
+        message: `Cannot update Faq with id=${id}. Maybe Faq was not found or req.body is empty!`,
       });
     });
 };
@@ -88,19 +101,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Faq.destroy({
+  Faq.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Faq was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Faq with id=${id}. Maybe Faq was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Faq with id=${id}. Maybe Faq was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -116,24 +135,13 @@ exports.deleteAll = (req, res) => {
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Faqs were deleted successfully!` });
+      res.send({
+        message: `${nums} Faqs were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message: err.message || "Some error occurred while removing all.faq.",
-      });
-    });
-};
-
-// find all published Faq
-exports.findAllPublished = (req, res) => {
-  Faq.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving.faq.",
       });
     });
 };

@@ -1,4 +1,4 @@
-const db = require("../models");
+const db = require("../db/models");
 const config = require("../config/auth.config");
 const { user: User, role: Role, refreshToken: RefreshToken } = db;
 
@@ -31,7 +31,7 @@ exports.signup = (req, res) => {
         });
       } else {
         // user role = 1
-        user.setRoles([1]).then(() => {
+        user.setRoles([3]).then(() => {
           res.send({ message: "User registered successfully!" });
         });
       }

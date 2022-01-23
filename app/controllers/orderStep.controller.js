@@ -4,24 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new OrderStep
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.title) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a OrderStep
-  const orderStep = {
-    title: req.body.title,
-    description: req.body.description,
-  };
-
   // Save OrderStep in the database
-  OrderStep.create(orderStep)
+  OrderStep.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -31,19 +20,25 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Fiturs from the database.
+// Retrieve all OrderSteps from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  OrderStep.findAll({ where: condition })
+  OrderStep.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving orderStep.",
+          err.message || "Some error occurred while retrieving orderStep;.",
       });
     });
 };
@@ -52,10 +47,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  OrderStep.findByPk(id)
+  OrderStep.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find OrderStep with id=${id}.`,
@@ -72,24 +73,28 @@ exports.findOne = (req, res) => {
 // Update a OrderStep by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  OrderStep.update(req.body, {
+  OrderStep.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "OrderStep was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating OrderStep with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update OrderStep with id=${id}. Maybe OrderStep was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating OrderStep with id=" + id,
+      res.send({
+        message: `Cannot update OrderStep with id=${id}. Maybe OrderStep was not found or req.body is empty!`,
       });
     });
 };
@@ -98,19 +103,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  OrderStep.destroy({
+  OrderStep.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "OrderStep was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete OrderStep with id=${id}. Maybe OrderStep was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete OrderStep with id=${id}. Maybe OrderStep was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -119,33 +130,21 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Fiturs from the database.
+// Delete all OrderSteps from the database.
 exports.deleteAll = (req, res) => {
   OrderStep.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Fiturs were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all.orderStep.",
+      res.send({
+        message: `${nums} OrderSteps were deleted successfully!`,
       });
-    });
-};
-
-// find all published OrderStep
-exports.findAllPublished = (req, res) => {
-  OrderStep.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving.orderStep.",
+          err.message || "Some error occurred while removing all.orderStep;.",
       });
     });
 };

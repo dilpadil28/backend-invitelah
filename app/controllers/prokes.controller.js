@@ -4,24 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Prokes
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: "Content can not be empty!",
-    });
-    return;
-  }
-
-  // Create a Prokes
-  const prokes = {
-    title: req.body.title,
-    description: req.body.description,
-  };
-
   // Save Prokes in the database
-  Prokes.create(prokes)
+  Prokes.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -34,15 +23,21 @@ exports.create = (req, res) => {
 // Retrieve all Prokess from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;
-  var condition = title ? { name: { [Op.like]: `%${name}%` } } : null;
+  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Prokes.findAll({ where: condition })
+  Prokes.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving prokes.",
+        message: err.message || "Some error occurred while retrieving prokes;.",
       });
     });
 };
@@ -51,10 +46,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Prokes.findByPk(id)
+  Prokes.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Prokes with id=${id}.`,
@@ -71,24 +72,28 @@ exports.findOne = (req, res) => {
 // Update a Prokes by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Prokes.update(req.body, {
+  Prokes.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Prokes was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Prokes with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Prokes with id=${id}. Maybe Prokes was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Prokes with id=" + id,
+      res.send({
+        message: `Cannot update Prokes with id=${id}. Maybe Prokes was not found or req.body is empty!`,
       });
     });
 };
@@ -97,19 +102,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Prokes.destroy({
+  Prokes.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Prokes was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Prokes with id=${id}. Maybe Prokes was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Prokes with id=${id}. Maybe Prokes was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -125,25 +136,14 @@ exports.deleteAll = (req, res) => {
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Prokess were deleted successfully!` });
+      res.send({
+        message: `${nums} Prokess were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all.prokes.",
-      });
-    });
-};
-
-// find all published Prokes
-exports.findAllPublished = (req, res) => {
-  Prokes.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving.prokes.",
+          err.message || "Some error occurred while removing all.prokes;.",
       });
     });
 };

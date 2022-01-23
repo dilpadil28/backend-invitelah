@@ -4,16 +4,13 @@ const Op = db.Sequelize.Op;
 
 // Create and Save a new Youtube
 exports.create = (req, res) => {
-  // Create a Youtube
-  const youtube = {
-    title: req.body.title,
-    url: req.body.url,
-  };
-
   // Save Youtube in the database
-  Youtube.create(youtube)
+  Youtube.create(req.body)
     .then((data) => {
-      res.send(data);
+      res.status(201).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -23,18 +20,25 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Fiturs from the database.
+// Retrieve all Youtubes from the database.
 exports.findAll = (req, res) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Youtube.findAll({ where: condition })
+  Youtube.findAll({
+    where: condition,
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
-      res.send(data);
+      res.status(200).json({
+        message: "success",
+        data: data,
+      });
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving youtube.",
+        message:
+          err.message || "Some error occurred while retrieving youtube;.",
       });
     });
 };
@@ -43,10 +47,16 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Youtube.findByPk(id)
+  Youtube.findOne({
+    where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
     .then((data) => {
       if (data) {
-        res.send(data);
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
       } else {
         res.status(404).send({
           message: `Cannot find Youtube with id=${id}.`,
@@ -63,24 +73,28 @@ exports.findOne = (req, res) => {
 // Update a Youtube by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Youtube.update(req.body, {
+  Youtube.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Youtube was updated successfully.",
+    .then((data) => {
+      data
+        .update(req.body)
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Error updating Youtube with id=" + id,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot update Youtube with id=${id}. Maybe Youtube was not found or req.body is empty!`,
-        });
-      }
     })
     .catch((err) => {
-      res.status(500).send({
-        message: "Error updating Youtube with id=" + id,
+      res.send({
+        message: `Cannot update Youtube with id=${id}. Maybe Youtube was not found or req.body is empty!`,
       });
     });
 };
@@ -89,19 +103,25 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Youtube.destroy({
+  Youtube.findOne({
     where: { id: id },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
   })
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Youtube was deleted successfully!",
+    .then((data) => {
+      console.log("data", data.image);
+      data
+        .destroy()
+        .then(() => {
+          res.status(200).send({
+            message: "success",
+            data: data,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: `Cannot delete Youtube with id=${id}. Maybe Youtube was not found!`,
+          });
         });
-      } else {
-        res.send({
-          message: `Cannot delete Youtube with id=${id}. Maybe Youtube was not found!`,
-        });
-      }
     })
     .catch((err) => {
       res.status(500).send({
@@ -110,32 +130,21 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Fiturs from the database.
+// Delete all Youtubes from the database.
 exports.deleteAll = (req, res) => {
   Youtube.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
-      res.send({ message: `${nums} Fiturs were deleted successfully!` });
+      res.send({
+        message: `${nums} Youtubes were deleted successfully!`,
+      });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all.youtube.",
-      });
-    });
-};
-
-// find all published Youtube
-exports.findAllPublished = (req, res) => {
-  Youtube.findAll({ where: { published: true } })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving.youtube.",
+          err.message || "Some error occurred while removing all.youtube;.",
       });
     });
 };

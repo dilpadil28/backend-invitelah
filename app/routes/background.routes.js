@@ -1,6 +1,12 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/background.controller");
 const uploadFilesMiddleware = require("../middleware/upload");
+const api = require("../config/api");
+const { validateCreate } = require("../middleware/globalValidation");
+const {
+  validateOne,
+  validateUpdate,
+} = require("../middleware/validation/backgroundValidation");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -11,6 +17,26 @@ module.exports = function (app) {
     next();
   });
 
-  // app.get("/api/background", [authJwt.verifyToken], controller.findAll);
-  app.post("/api/background", [uploadFilesMiddleware], controller.create);
+  app.post(
+    `${api.URL}/background`,
+    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
+    controller.create
+  );
+  app.get(`${api.URL}/background`, authJwt.verifyToken, controller.findAll);
+  app.get(`${api.URL}/background/:id`, validateOne, controller.findOne);
+  app.put(
+    `${api.URL}/background/:id`,
+    [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
+    controller.update
+  );
+  app.delete(
+    `${api.URL}/background/:id`,
+    [authJwt.verifyToken, validateOne],
+    controller.delete
+  );
+  app.delete(
+    `${api.URL}/background`,
+    authJwt.verifyToken,
+    controller.deleteAll
+  );
 };
