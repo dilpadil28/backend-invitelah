@@ -80,6 +80,9 @@ module.exports = {
       turutMengundang: {
         type: Sequelize.TEXT,
       },
+      privateLink: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

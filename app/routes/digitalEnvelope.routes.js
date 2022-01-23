@@ -1,12 +1,12 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/digitalEnvelope.controller");
+const uploadFilesMiddleware = require("../middleware/upload");
 const api = require("../config/api");
 const {
   validateOne,
   validateUpdate,
   validateCreate,
 } = require("../middleware/validation/digitalEnvelopeValidation");
-const uploadFilesMiddleware = require("../middleware/upload");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -17,26 +17,34 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`${api.URL}/digitalenvelope`, [validateCreate], controller.create);
+  app.post(
+    `${api.URL}/digitalenvelope`,
+    [authJwt.verifyToken],
+    controller.create
+  );
   app.get(
     `${api.URL}/digitalenvelope`,
-
+    authJwt.verifyToken,
     controller.findAll
   );
-  app.get(`${api.URL}/digitalenvelope/:id`, validateOne, controller.findOne);
+  app.get(
+    `${api.URL}/digitalenvelope/:id`,
+    [authJwt.verifyToken, validateOne],
+    controller.findOne
+  );
   app.put(
     `${api.URL}/digitalenvelope/:id`,
-    [uploadFilesMiddleware, validateUpdate],
+    [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
   );
   app.delete(
     `${api.URL}/digitalenvelope/:id`,
-    [validateOne],
+    [authJwt.verifyToken, validateOne],
     controller.delete
   );
   app.delete(
     `${api.URL}/digitalenvelope`,
-
+    authJwt.verifyToken,
     controller.deleteAll
   );
 };

@@ -1,4 +1,5 @@
 const db = require("../db/models");
+const role = require("../db/models/role");
 const User = db.user;
 const Op = db.Sequelize.Op;
 
@@ -7,10 +8,32 @@ exports.create = (req, res) => {
   // Save User in the database
   User.create(req.body)
     .then((data) => {
-      res.status(201).json({
-        message: "success",
-        data: data,
-      });
+      if (req.body.roles) {
+        role
+          .findAll({
+            where: {
+              name: {
+                [Op.or]: req.body.roles,
+              },
+            },
+          })
+          .then((roles) => {
+            data.setRoles(roles).then(() => {
+              res.status(201).json({
+                message: "success",
+                data: data,
+              });
+            });
+          });
+      } else {
+        // user role = 1
+        data.setRoles([3]).then(() => {
+          res.status(201).json({
+            message: "success",
+            data: data,
+          });
+        });
+      }
     })
     .catch((err) => {
       res.status(500).send({

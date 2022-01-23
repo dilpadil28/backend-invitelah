@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Youtube extends Model {
     /**
@@ -13,12 +11,16 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Youtube.init({
-    title: DataTypes.STRING,
-    url: DataTypes.TEXT
-  }, {
-    sequelize,
-    modelName: 'Youtube',
-  });
+  Youtube.init(
+    {
+      title: DataTypes.STRING,
+      url: DataTypes.TEXT,
+      published: DataTypes.BOOLEAN,
+    },
+    {
+      sequelize,
+      modelName: "Youtube",
+    }
+  );
   return Youtube;
 };

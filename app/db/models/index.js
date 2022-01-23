@@ -249,13 +249,13 @@ db.user.belongsToMany(db.role, {
 });
 
 db.invitation.belongsToMany(db.invitationType, {
-  through: "invitation_type",
+  through: "invitation_invitationtype",
   foreignKey: "invitationId",
   otherKey: "invitationTypeId",
 });
 
 db.invitationType.belongsToMany(db.invitation, {
-  through: "invitation_type",
+  through: "invitation_invitationtype",
   foreignKey: "invitationTypeId",
   otherKey: "invitationId",
 });

@@ -1,11 +1,14 @@
-const db = require("../models");
+const db = require("../db/models");
 const Invitation = db.invitation;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Invitation
 exports.create = (req, res) => {
   // Save Invitation in the database
-  Invitation.create(req.body)
+  let privateLink = {
+    privateLink: (Math.random() + 1).toString(36).substring(7),
+  };
+  Invitation.create(...req.body, privateLink)
     .then((data) => {
       res.status(201).json({
         message: "success",

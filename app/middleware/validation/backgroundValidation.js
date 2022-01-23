@@ -1,10 +1,24 @@
 const { body, validationResult, param } = require("express-validator");
 const background = require("../../db/models/background");
 module.exports = {
+  validateCreate: [
+    body("name").notEmpty().withMessage("name is required"),
+    body("image").notEmpty().withMessage("image is required"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
   validateOne: [
     param("id")
       .notEmpty()
-      .withMessage("name is required")
+      .withMessage("param is required")
       .bail()
       .isNumeric()
       .withMessage("id must be an number")
@@ -43,6 +57,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
+    body("image").notEmpty().withMessage("image is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

@@ -2,7 +2,7 @@ const { authJwt } = require("../middleware");
 const controller = require("../controllers/background.controller");
 const uploadFilesMiddleware = require("../middleware/upload");
 const api = require("../config/api");
-const { validateCreate } = require("../middleware/globalValidation");
+const { validateName } = require("../middleware/globalValidation");
 const {
   validateOne,
   validateUpdate,
@@ -19,7 +19,7 @@ module.exports = function (app) {
 
   app.post(
     `${api.URL}/background`,
-    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
+    [uploadFilesMiddleware, authJwt.verifyToken, validateName],
     controller.create
   );
   app.get(`${api.URL}/background`, authJwt.verifyToken, controller.findAll);

@@ -40,6 +40,28 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/background.routes")(app);
 require("./app/routes/digitalEnvelope.routes")(app);
+require("./app/routes/faq.routes")(app);
+require("./app/routes/fitur.routes")(app);
+require("./app/routes/invitation.routes")(app);
+require("./app/routes/logActivity.routes")(app);
+require("./app/routes/loveStory.routes")(app);
+require("./app/routes/mainLanding.routes")(app);
+require("./app/routes/message.routes")(app);
+require("./app/routes/music.routes")(app);
+require("./app/routes/mySocialMedia.routes")(app);
+require("./app/routes/myTheme.routes")(app);
+require("./app/routes/orderStep.routes")(app);
+require("./app/routes/photoGallery.routes")(app);
+require("./app/routes/presence.routes")(app);
+require("./app/routes/price.routes")(app);
+require("./app/routes/prokes.routes")(app);
+require("./app/routes/role.routes")(app);
+require("./app/routes/socialMedia.routes")(app);
+require("./app/routes/superiority.routes")(app);
+require("./app/routes/testimonial.routes")(app);
+require("./app/routes/theme.routes")(app);
+require("./app/routes/user.routes")(app);
+require("./app/routes/youtube.routes")(app);
 require("./app/routes/userTest.routes")(app);
 
 app.use(function (err, req, res, next) {

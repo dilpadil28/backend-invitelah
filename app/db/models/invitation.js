@@ -85,6 +85,9 @@ module.exports = (sequelize, DataTypes) => {
       turutMengundang: {
         type: DataTypes.TEXT,
       },
+      privateLink: {
+        type: DataTypes.STRING,
+      },
     },
     {
       sequelize,

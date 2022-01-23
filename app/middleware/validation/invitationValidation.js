@@ -1,0 +1,114 @@
+const { body, validationResult, param } = require("express-validator");
+const { invitation, invitationType } = require("../../db/models");
+module.exports = {
+  validateOne: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .isNumeric()
+      .withMessage("id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await invitation.findOne({
+          where: { id: value },
+        });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param id not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateUpdate: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .isNumeric()
+      .withMessage("id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await invitation.findOne({
+          where: { id: value },
+        });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param id not found"),
+    body("title").notEmpty().withMessage("title is required"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateOneType: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .isNumeric()
+      .withMessage("id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await invitationType.findOne({
+          where: { id: value },
+        });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param id not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateUpdateType: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .isNumeric()
+      .withMessage("id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await invitationType.findOne({
+          where: { id: value },
+        });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param id not found"),
+    body("title").notEmpty().withMessage("title is required"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+};

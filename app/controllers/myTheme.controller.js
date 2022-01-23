@@ -1,4 +1,4 @@
-const db = require("../models");
+const db = require("../db/models");
 const MyTheme = db.myTheme;
 const Op = db.Sequelize.Op;
 

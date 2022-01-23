@@ -18,7 +18,7 @@ module.exports = {
   validateOne: [
     param("id")
       .notEmpty()
-      .withMessage("name is required")
+      .withMessage("param is required")
       .bail()
       .isNumeric()
       .withMessage("id must be an number")
@@ -46,7 +46,7 @@ module.exports = {
   validateUpdate: [
     param("id")
       .notEmpty()
-      .withMessage("name is required")
+      .withMessage("param is required")
       .bail()
       .isNumeric()
       .withMessage("id must be an number")
@@ -61,6 +61,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
+    body("number").notEmpty().withMessage("number is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

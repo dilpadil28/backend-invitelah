@@ -1,6 +1,12 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/user.controller");
+const uploadFilesMiddleware = require("../middleware/upload");
 const api = require("../config/api");
+const {
+  validateOne,
+  validateUpdate,
+  validateCreate,
+} = require("../middleware/validation/userValidation");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -11,5 +17,26 @@ module.exports = function (app) {
     next();
   });
 
-  app.get(`${api.URL}/user`, [authJwt.verifyToken], controller.findAll);
+  app.post(
+    `${api.URL}/user`,
+    [authJwt.verifyToken, validateCreate],
+    controller.create
+  );
+  app.get(`${api.URL}/user`, authJwt.verifyToken, controller.findAll);
+  app.get(
+    `${api.URL}/user/:id`,
+    [authJwt.verifyToken, validateOne],
+    controller.findOne
+  );
+  app.put(
+    `${api.URL}/user/:id`,
+    [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
+    controller.update
+  );
+  app.delete(
+    `${api.URL}/user/:id`,
+    [authJwt.verifyToken, validateOne],
+    controller.delete
+  );
+  app.delete(`${api.URL}/user`, authJwt.verifyToken, controller.deleteAll);
 };
