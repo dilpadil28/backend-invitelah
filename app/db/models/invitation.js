@@ -88,6 +88,9 @@ module.exports = (sequelize, DataTypes) => {
       privateLink: {
         type: DataTypes.STRING,
       },
+      expiredAt: {
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize,

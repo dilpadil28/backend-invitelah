@@ -62,6 +62,11 @@ require("./app/routes/testimonial.routes")(app);
 require("./app/routes/theme.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/youtube.routes")(app);
+require("./app/routes/coupon.routes")(app);
+require("./app/routes/invoice.routes")(app);
+require("./app/routes/payment.routes")(app);
+require("./app/routes/status.routes")(app);
+require("./app/routes/transaction.routes")(app);
 require("./app/routes/userTest.routes")(app);
 
 app.use(function (err, req, res, next) {

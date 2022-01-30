@@ -1,11 +1,21 @@
 const db = require("../db/models");
 const DigitalEnvelope = db.digitalEnvelope;
 const Op = db.Sequelize.Op;
+const fs = require("fs");
 
 // Create and Save a new DigitalEnvelope
 exports.create = (req, res) => {
+  // Create a DigitalEnvelope
+  const digitalEnvelope = {
+    name: req.body.name,
+    number: req.body.number,
+    published: req.body.published,
+    image: req.file === undefined ? "" : req.file.path,
+    invitationId: req.body.invitationId,
+  };
+
   // Save DigitalEnvelope in the database
-  DigitalEnvelope.create(req.body)
+  DigitalEnvelope.create(digitalEnvelope)
     .then((data) => {
       res.status(201).json({
         message: "success",
@@ -80,8 +90,16 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
+      if (req.file !== undefined) {
+        fs.unlink(data.image, (err) => {
+          if (err) throw err;
+        });
+      }
       data
-        .update(req.body)
+        .update({
+          name: req.body.name,
+          image: req.file === undefined ? data.image : req.file.path,
+        })
         .then(() => {
           res.status(200).send({
             message: "success",
@@ -110,13 +128,15 @@ exports.delete = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      console.log("data", data.image);
       data
         .destroy()
         .then(() => {
           res.status(200).send({
             message: "success",
             data: data,
+          });
+          fs.unlink(data.image, (err) => {
+            if (err) throw err;
           });
         })
         .catch((err) => {

@@ -1,11 +1,11 @@
 const db = require("../db/models");
-const Transaction = db.transaction;
+const Payment = db.payment;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Transaction
+// Create and Save a new Payment
 exports.create = (req, res) => {
-  // Save Transaction in the database
-  Transaction.create(req.body)
+  // Save Payment in the database
+  Payment.create(req.body)
     .then((data) => {
       res.status(201).json({
         message: "success",
@@ -15,17 +15,17 @@ exports.create = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while creating the Transaction.",
+          err.message || "Some error occurred while creating the Payment.",
       });
     });
 };
 
-// Retrieve all Transactions from the database.
+// Retrieve all Payments from the database.
 exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  Transaction.findAll({
+  Payment.findAll({
     where: condition,
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
@@ -37,17 +37,16 @@ exports.findAll = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving transaction.",
+        message: err.message || "Some error occurred while retrieving payment.",
       });
     });
 };
 
-// Find a single Transaction with an id
+// Find a single Payment with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Transaction.findOne({
+  Payment.findOne({
     where: { id: id },
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
@@ -59,21 +58,21 @@ exports.findOne = (req, res) => {
         });
       } else {
         res.status(404).send({
-          message: `Cannot find Transaction with id=${id}.`,
+          message: `Cannot find Payment with id=${id}.`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error retrieving Transaction with id=" + id,
+        message: "Error retrieving Payment with id=" + id,
       });
     });
 };
 
-// Update a Transaction by the id in the request
+// Update a Payment by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-  Transaction.findOne({
+  Payment.findOne({
     where: { id: id },
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
@@ -88,22 +87,22 @@ exports.update = (req, res) => {
         })
         .catch((err) => {
           res.status(500).send({
-            message: "Error updating Transaction with id=" + id,
+            message: "Error updating Payment with id=" + id,
           });
         });
     })
     .catch((err) => {
       res.send({
-        message: `Cannot update Transaction with id=${id}. Maybe Transaction was not found or req.body is empty!`,
+        message: `Cannot update Payment with id=${id}. Maybe Payment was not found or req.body is empty!`,
       });
     });
 };
 
-// Delete a Transaction with the specified id in the request
+// Delete a Payment with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Transaction.findOne({
+  Payment.findOne({
     where: { id: id },
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
@@ -119,32 +118,32 @@ exports.delete = (req, res) => {
         })
         .catch((err) => {
           res.status(500).send({
-            message: `Cannot delete Transaction with id=${id}. Maybe Transaction was not found!`,
+            message: `Cannot delete Payment with id=${id}. Maybe Payment was not found!`,
           });
         });
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Transaction with id=" + id,
+        message: "Could not delete Payment with id=" + id,
       });
     });
 };
 
-// Delete all Transactions from the database.
+// Delete all Payments from the database.
 exports.deleteAll = (req, res) => {
-  Transaction.destroy({
+  Payment.destroy({
     where: {},
     truncate: false,
   })
     .then((nums) => {
       res.send({
-        message: `${nums} Transactions were deleted successfully!`,
+        message: `${nums} Payments were deleted successfully!`,
       });
     })
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all.transaction.",
+          err.message || "Some error occurred while removing all.payment.",
       });
     });
 };

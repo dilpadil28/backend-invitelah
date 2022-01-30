@@ -1,6 +1,6 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/music.controller");
-const uploadFilesMiddleware = require("../middleware/upload");
+const uploadFilesMiddleware = require("../middleware/uploadMusic");
 const api = require("../config/api");
 const {
   validateOne,

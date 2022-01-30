@@ -1,12 +1,12 @@
 const { authJwt } = require("../middleware");
-const controller = require("../controllers/digitalEnvelope.controller");
+const controller = require("../controllers/transaction.controller");
 const uploadFilesMiddleware = require("../middleware/upload");
 const api = require("../config/api");
 const {
   validateOne,
   validateUpdate,
   validateCreate,
-} = require("../middleware/validation/digitalEnvelopeValidation");
+} = require("../middleware/validation/transactionValidation");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -17,33 +17,25 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(
-    `${api.URL}/digitalenvelope`,
-    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
-    controller.create
-  );
+  app.post(`${api.URL}/transaction`, [validateCreate], controller.create);
+  app.get(`${api.URL}/transaction`, authJwt.verifyToken, controller.findAll);
   app.get(
-    `${api.URL}/digitalenvelope`,
-    authJwt.verifyToken,
-    controller.findAll
-  );
-  app.get(
-    `${api.URL}/digitalenvelope/:id`,
+    `${api.URL}/transaction/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
   app.put(
-    `${api.URL}/digitalenvelope/:id`,
+    `${api.URL}/transaction/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
   );
   app.delete(
-    `${api.URL}/digitalenvelope/:id`,
+    `${api.URL}/transaction/:id`,
     [authJwt.verifyToken, validateOne],
     controller.delete
   );
   app.delete(
-    `${api.URL}/digitalenvelope`,
+    `${api.URL}/transaction`,
     authJwt.verifyToken,
     controller.deleteAll
   );

@@ -59,10 +59,65 @@ db.myTheme = require("./myTheme.js")(sequelize, Sequelize);
 db.myThemeList = require("./myThemelist.js")(sequelize, Sequelize);
 db.music = require("./music.js")(sequelize, Sequelize);
 db.youtube = require("./youtube.js")(sequelize, Sequelize);
+db.coupon = require("./coupon.js")(sequelize, Sequelize);
+db.invoice = require("./invoice.js")(sequelize, Sequelize);
+db.payment = require("./payment.js")(sequelize, Sequelize);
+db.status = require("./status.js")(sequelize, Sequelize);
+db.transaction = require("./transaction.js")(sequelize, Sequelize);
+
+db.status.belongsTo(db.invitation, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+});
+db.invitation.hasOne(db.status, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+});
+db.transaction.belongsTo(db.invitation, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+});
+db.invitation.hasOne(db.transaction, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+});
+db.payment.belongsTo(db.transaction, {
+  foreignKey: "transactionId",
+  targetKey: "id",
+});
+db.transaction.hasOne(db.payment, {
+  foreignKey: "transactionId",
+  targetKey: "id",
+});
+db.coupon.belongsTo(db.transaction, {
+  foreignKey: "transactionId",
+  targetKey: "id",
+});
+db.transaction.hasOne(db.coupon, {
+  foreignKey: "transactionId",
+  targetKey: "id",
+});
+db.transaction.belongsTo(db.invoice, {
+  foreignKey: "invoiceId",
+  targetKey: "id",
+});
+db.invoice.hasOne(db.transaction, {
+  foreignKey: "invoiceId",
+  targetKey: "id",
+});
 
 db.invitation.hasMany(db.youtube, {
   foreignKey: "invitationId",
   constraints: false,
+});
+
+db.priceList.belongsTo(db.invitation, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+});
+db.invitation.hasOne(db.priceList, {
+  foreignKey: "invitationId",
+  targetKey: "id",
 });
 
 db.youtube.belongsTo(db.invitation, {

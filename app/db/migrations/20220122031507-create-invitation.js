@@ -83,6 +83,9 @@ module.exports = {
       privateLink: {
         type: Sequelize.STRING,
       },
+      expiredAt: {
+        type: Sequelize.DATE,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
