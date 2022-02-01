@@ -38,5 +38,5 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOne],
     controller.delete
   );
-  app.delete(`${api.URL}/user`, authJwt.verifyToken, controller.deleteAll);
+  // app.delete(`${api.URL}/user`, authJwt.verifyToken, controller.deleteAll);
 };

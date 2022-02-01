@@ -51,9 +51,18 @@ exports.findAll = (req, res) => {
 
   User.findAll({
     where: condition,
-    attributes: { exclude: ["createdAt", "updatedAt"] },
+    order: [["updatedAt", "DESC"]],
+    include: {
+      model: db.role,
+      attributes: ["id", "name"],
+      through: {
+        attributes: ["roleId", "userId"],
+      },
+    },
+    attributes: ["id", "fullName", "username", "phoneNumber", "email"],
   })
     .then((data) => {
+      qd;
       res.status(200).json({
         message: "success",
         data: data,
