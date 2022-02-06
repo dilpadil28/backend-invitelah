@@ -105,6 +105,8 @@ module.exports = {
       .withMessage("param id not found"),
     body("fullName").notEmpty().withMessage("fullName is required"),
     body("username").notEmpty().withMessage("username is required"),
+    body("phoneNumber").notEmpty().withMessage("phoneNumber is required"),
+    body("email").notEmpty().withMessage("email is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

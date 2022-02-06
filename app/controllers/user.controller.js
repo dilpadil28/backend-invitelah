@@ -2,6 +2,7 @@ const db = require("../db/models");
 const role = require("../db/models/role");
 const User = db.user;
 const Op = db.Sequelize.Op;
+const bcrypt = require("bcryptjs");
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -62,7 +63,6 @@ exports.findAll = (req, res) => {
     attributes: ["id", "fullName", "username", "phoneNumber", "email"],
   })
     .then((data) => {
-      qd;
       res.status(200).json({
         message: "success",
         data: data,
@@ -81,7 +81,14 @@ exports.findOne = (req, res) => {
 
   User.findOne({
     where: { id: id },
-    attributes: { exclude: ["createdAt", "updatedAt"] },
+    include: {
+      model: db.role,
+      attributes: ["id", "name"],
+      through: {
+        attributes: ["roleId", "userId"],
+      },
+    },
+    attributes: ["id", "fullName", "username", "phoneNumber", "email"],
   })
     .then((data) => {
       if (data) {
@@ -111,12 +118,45 @@ exports.update = (req, res) => {
   })
     .then((data) => {
       data
-        .update(req.body)
-        .then(() => {
-          res.status(200).send({
-            message: "success",
-            data: data,
-          });
+        .update({
+          fullName: req.body.fullName,
+          username: req.body.username,
+          phoneNumber: req.body.phoneNumber,
+          email: req.body.email,
+          password: !req.body.password
+            ? data.password
+            : bcrypt.hashSync(req.body.password, 8),
+          passwordChangeAt: req.body.password
+            ? new Date()
+            : data.passwordChangeAt,
+        })
+        .then((user) => {
+          if (req.body.roles) {
+            db.role
+              .findAll({
+                where: {
+                  name: {
+                    [Op.or]: req.body.roles,
+                  },
+                },
+              })
+              .then((roles) => {
+                user.setRoles(roles).then(() => {
+                  res.status(200).send({
+                    message: "success",
+                    data: data,
+                  });
+                });
+              });
+          } else {
+            // user role = 1
+            user.setRoles([3]).then(() => {
+              res.status(200).send({
+                message: "success",
+                data: data,
+              });
+            });
+          }
         })
         .catch((err) => {
           res.status(500).send({
