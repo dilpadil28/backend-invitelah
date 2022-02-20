@@ -10,7 +10,7 @@ exports.create = (req, res) => {
     name: req.body.name,
     number: req.body.number,
     published: req.body.published,
-    image: req.file === undefined ? "" : req.file.path,
+    image: req.file === undefined ? "" : req.file.filename,
     invitationId: req.body.invitationId,
   };
 
@@ -91,14 +91,14 @@ exports.update = (req, res) => {
   })
     .then((data) => {
       if (req.file !== undefined) {
-        fs.unlink(data.image, (err) => {
+        fs.unlink("./upload/images/" + data.image, (err) => {
           if (err) throw err;
         });
       }
       data
         .update({
           name: req.body.name,
-          image: req.file === undefined ? data.image : req.file.path,
+          image: req.file === undefined ? data.image : req.file.filename,
         })
         .then(() => {
           res.status(200).send({
@@ -135,9 +135,11 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
-          fs.unlink(data.image, (err) => {
-            if (err) throw err;
-          });
+          if (data.image !== "") {
+            fs.unlink("./upload/images/" + data.image, (err) => {
+              if (err) throw err;
+            });
+          }
         })
         .catch((err) => {
           res.status(500).send({

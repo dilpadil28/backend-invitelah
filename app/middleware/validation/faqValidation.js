@@ -117,7 +117,8 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
-    body("title").notEmpty().withMessage("title is required"),
+    body("answer").notEmpty().withMessage("answer is required"),
+    body("question").notEmpty().withMessage("question is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

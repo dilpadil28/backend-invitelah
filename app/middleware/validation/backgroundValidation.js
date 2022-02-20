@@ -3,7 +3,7 @@ const background = require("../../db/models/background");
 module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -57,7 +57,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

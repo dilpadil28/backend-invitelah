@@ -7,8 +7,9 @@ const fs = require("fs");
 exports.create = (req, res) => {
   // Create a Music
   const music = {
-    name: req.body.name,
-    song: req.file === undefined ? "" : req.file.path,
+    title: req.body.title,
+    song: req.file === undefined ? "" : req.file.filename,
+    published: req.body.published,
   };
 
   // Save Music in the database
@@ -28,8 +29,8 @@ exports.create = (req, res) => {
 
 // Retrieve all Backgrounds from the database.
 exports.findAll = (req, res) => {
-  const name = req.query.name;
-  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+  const title = req.query.title;
+  var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
   Music.findAll({
     where: condition,
@@ -84,14 +85,15 @@ exports.update = (req, res) => {
   })
     .then((data) => {
       if (req.file !== undefined) {
-        fs.unlink(data.song, (err) => {
+        fs.unlink("./upload/files/songs/" + data.song, (err) => {
           if (err) throw err;
         });
       }
       data
         .update({
-          name: req.body.name,
-          song: req.file === undefined ? data.song : req.file.path,
+          title: req.body.title,
+          song: req.file === undefined ? data.song : req.file.filename,
+          published: req.body.published,
         })
         .then(() => {
           res.status(200).send({
@@ -128,9 +130,11 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
-          fs.unlink(data.song, (err) => {
-            if (err) throw err;
-          });
+          if (data.song !== "") {
+            fs.unlink("./upload/files/songs/" + data.song, (err) => {
+              if (err) throw err;
+            });
+          }
         })
         .catch((err) => {
           res.status(500).send({

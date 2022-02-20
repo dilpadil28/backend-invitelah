@@ -32,7 +32,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/faq/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
@@ -55,7 +55,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOneList],
     controllerList.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/faqlist/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdateList],
     controllerList.update

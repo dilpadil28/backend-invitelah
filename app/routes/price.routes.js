@@ -36,7 +36,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/price/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
@@ -59,7 +59,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOneList],
     controllerList.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/pricelist/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdateList],
     controllerList.update
@@ -89,7 +89,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOneListUrl],
     controllerListUrl.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/pricelisturl/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdateListUrl],
     controllerListUrl.update

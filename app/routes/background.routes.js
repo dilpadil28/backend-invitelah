@@ -24,7 +24,7 @@ module.exports = function (app) {
   );
   app.get(`${api.URL}/background`, authJwt.verifyToken, controller.findAll);
   app.get(`${api.URL}/background/:id`, validateOne, controller.findOne);
-  app.put(
+  app.patch(
     `${api.URL}/background/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update

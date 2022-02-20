@@ -31,7 +31,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/invitation/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
@@ -62,7 +62,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOneType],
     controllerType.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/invitationtype/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdateType],
     controllerType.update

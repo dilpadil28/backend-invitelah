@@ -3,7 +3,7 @@ const { photoGallery } = require("../../db/models");
 module.exports = {
   validateCreate: [
     body("title").notEmpty().withMessage("title is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -61,7 +61,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("title").notEmpty().withMessage("title is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

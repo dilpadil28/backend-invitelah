@@ -24,7 +24,7 @@ module.exports = function (app) {
   );
   app.get(`${api.URL}/testimonial`, authJwt.verifyToken, controller.findAll);
   app.get(`${api.URL}/testimonial/:id`, validateOne, controller.findOne);
-  app.put(
+  app.patch(
     `${api.URL}/testimonial/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update

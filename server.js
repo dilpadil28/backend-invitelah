@@ -81,9 +81,11 @@ app.use(function (err, req, res, next) {
     });
     return;
   }
-
   // Handle any other errors
 });
+
+app.use(express.static(__dirname + "/upload/images"));
+app.use(express.static(__dirname + "/upload/files/songs"));
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

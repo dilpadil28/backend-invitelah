@@ -28,7 +28,7 @@ module.exports = function (app) {
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/role/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update

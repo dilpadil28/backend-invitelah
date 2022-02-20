@@ -1,5 +1,5 @@
 const { body, validationResult, param } = require("express-validator");
-const { orderStep, orderStepList } = require("../../db/models");
+const { prokes, prokesList } = require("../../db/models");
 module.exports = {
   validateOne: [
     param("id")
@@ -10,7 +10,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await orderStep.findOne({
+        const checking = await prokes.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -38,7 +38,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await orderStep.findOne({
+        const checking = await prokes.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -60,7 +60,7 @@ module.exports = {
   ],
   validateCreateList: [
     body("title").notEmpty().withMessage("title is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -81,7 +81,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await orderStepList.findOne({
+        const checking = await prokesList.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -109,7 +109,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await orderStepList.findOne({
+        const checking = await prokesList.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -118,7 +118,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("title").notEmpty().withMessage("title is required"),
-    body("image").notEmpty().withMessage("image is required"),
+
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

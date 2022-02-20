@@ -59,9 +59,7 @@ module.exports = {
     },
   ],
   validateCreateList: [
-    body("name").notEmpty().withMessage("name is required"),
-    body("image").notEmpty().withMessage("image is required"),
-    body("url").notEmpty().withMessage("url is required"),
+    body("title").notEmpty().withMessage("title is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -118,9 +116,7 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
-    body("name").notEmpty().withMessage("name is required"),
-    body("image").notEmpty().withMessage("image is required"),
-    body("url").notEmpty().withMessage("url is required"),
+    body("title").notEmpty().withMessage("title is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

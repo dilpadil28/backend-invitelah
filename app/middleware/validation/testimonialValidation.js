@@ -4,9 +4,7 @@ module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
     body("description").notEmpty().withMessage("description is required"),
-    body("url").notEmpty().withMessage("url is required"),
     body("rating").notEmpty().withMessage("rating is required"),
-    body("image").notEmpty().withMessage("image is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -65,9 +63,7 @@ module.exports = {
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
     body("description").notEmpty().withMessage("description is required"),
-    body("url").notEmpty().withMessage("url is required"),
     body("rating").notEmpty().withMessage("rating is required"),
-    body("image").notEmpty().withMessage("image is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

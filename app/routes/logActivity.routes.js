@@ -19,7 +19,7 @@ module.exports = function (app) {
     authJwt.verifyToken,
     controller.findOne
   );
-  app.put(
+  app.patch(
     `${api.URL}/logactivity/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken],
     controller.update

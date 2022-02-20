@@ -1,9 +1,8 @@
 const { body, validationResult, param } = require("express-validator");
-const { digitalEnvelope } = require("../../db/models");
+const { music } = require("../../db/models");
 module.exports = {
   validateCreate: [
-    body("name").notEmpty().withMessage("name is required"),
-    body("song").notEmpty().withMessage("song is required"),
+    body("title").notEmpty().withMessage("title is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -24,7 +23,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await digitalEnvelope.findOne({
+        const checking = await music.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -52,7 +51,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await digitalEnvelope.findOne({
+        const checking = await music.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -60,8 +59,7 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
-    body("name").notEmpty().withMessage("name is required"),
-    body("song").notEmpty().withMessage("song is required"),
+    body("title").notEmpty().withMessage("title is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

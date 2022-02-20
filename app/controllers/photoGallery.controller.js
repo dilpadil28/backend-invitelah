@@ -8,7 +8,7 @@ exports.create = (req, res) => {
   // Create a PhotoGallery
   const photoGallery = {
     title: req.body.title,
-    image: req.file === undefined ? "" : req.file.path,
+    image: req.file === undefined ? "" : req.file.filename,
     descrtiption: req.body.descrtiption,
     invitationId: req.body.invitationId,
   };
@@ -88,14 +88,14 @@ exports.update = (req, res) => {
   })
     .then((data) => {
       if (req.file !== undefined) {
-        fs.unlink(data.image, (err) => {
+        fs.unlink("./upload/images/" + data.image, (err) => {
           if (err) throw err;
         });
       }
       data
         .update({
           title: req.body.title,
-          image: req.file === undefined ? data.image : req.file.path,
+          image: req.file === undefined ? data.image : req.file.filename,
         })
         .then(() => {
           res.status(200).send({
@@ -132,9 +132,11 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
-          fs.unlink(data.image, (err) => {
-            if (err) throw err;
-          });
+          if (data.image !== "") {
+            fs.unlink("./upload/images/" + data.image, (err) => {
+              if (err) throw err;
+            });
+          }
         })
         .catch((err) => {
           res.status(500).send({
