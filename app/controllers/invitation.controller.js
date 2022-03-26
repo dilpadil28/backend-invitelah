@@ -1,14 +1,38 @@
 const db = require("../db/models");
 const Invitation = db.invitation;
 const Op = db.Sequelize.Op;
-
+const fs = require("fs");
 // Create and Save a new Invitation
 exports.create = (req, res) => {
   // Save Invitation in the database
-  let privateLink = {
+  let invitation = {
+    slug: req.body.slug,
+    namaPria: req.body.namaPria,
+    namaPendekPria: req.body.namaPendekPria,
+    namaOrangTuaPria: req.body.namaOrangTuaPria,
+    namaWanita: req.body.namaWanita,
+    namaPendekWanita: req.body.namaPendekWanita,
+    namaOrangTuaWanita: req.body.namaOrangTuaWanita,
+    avatar: req.file === undefined ? "" : req.file.filename,
+    alamatKado: req.body.alamatKado,
+    tanggalNikah: req.body.tanggalNikah,
+    jamNikah: req.body.jamNikah,
+    alamatNikah: req.body.alamatNikah,
+    mapsNikah: req.body.mapsNikah,
+    tanggalResepsi: req.body.tanggalResepsi,
+    jamResepsi: req.body.jamResepsi,
+    alamatResepsi: req.body.alamatResepsi,
+    mapsResepsi: req.body.mapsResepsi,
+    bissmillah: req.body.bissmillah,
+    salamPembuka: req.body.salamPembuka,
+    salamPembukaDeskripsi: req.body.salamPembukaDeskripsi,
+    salamPenutup: req.body.salamPenutup,
+    salamPenutupDeskripsi: req.body.salamPenutupDeskripsi,
+    doa: req.body.doa,
+    turutMengundang: req.body.turutMengundang,
     privateLink: (Math.random() + 1).toString(36).substring(7),
   };
-  Invitation.create(...req.body, privateLink)
+  Invitation.create(invitation)
     .then((data) => {
       res.status(201).json({
         message: "success",
@@ -76,13 +100,45 @@ exports.findOne = (req, res) => {
 // Update a Invitation by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
+  console.log('req.file', req.file)
+
   Invitation.findOne({
     where: { id: id },
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
+      if (req.file !== undefined && data.avatar !== "") {
+        fs.unlink("./upload/images/" + data.avatar, (err) => {
+          if (err) throw err;
+        });
+      }
       data
-        .update(req.body)
+        .update({
+          slug: req.body.slug,
+          namaPria: req.body.namaPria,
+          namaPendekPria: req.body.namaPendekPria,
+          namaOrangTuaPria: req.body.namaOrangTuaPria,
+          namaWanita: req.body.namaWanita,
+          namaPendekWanita: req.body.namaPendekWanita,
+          namaOrangTuaWanita: req.body.namaOrangTuaWanita,
+          avatar: req.file === undefined ? data.avatar : req.file.filename,
+          alamatKado: req.body.alamatKado,
+          tanggalNikah: req.body.tanggalNikah,
+          jamNikah: req.body.jamNikah,
+          alamatNikah: req.body.alamatNikah,
+          mapsNikah: req.body.mapsNikah,
+          tanggalResepsi: req.body.tanggalResepsi,
+          jamResepsi: req.body.jamResepsi,
+          alamatResepsi: req.body.alamatResepsi,
+          mapsResepsi: req.body.mapsResepsi,
+          bissmillah: req.body.bissmillah,
+          salamPembuka: req.body.salamPembuka,
+          salamPembukaDeskripsi: req.body.salamPembukaDeskripsi,
+          salamPenutup: req.body.salamPenutup,
+          salamPenutupDeskripsi: req.body.salamPenutupDeskripsi,
+          doa: req.body.doa,
+          turutMengundang: req.body.turutMengundang,
+        })
         .then(() => {
           res.status(200).send({
             message: "success",
@@ -91,11 +147,12 @@ exports.update = (req, res) => {
         })
         .catch((err) => {
           res.status(500).send({
-            message: "Error updating Invitation with id=" + id,
+            message: "Error updating Testimonial with id=" + id,
           });
         });
     })
     .catch((err) => {
+      console.log('err', err)
       res.send({
         message: `Cannot update Invitation with id=${id}. Maybe Invitation was not found or req.body is empty!`,
       });

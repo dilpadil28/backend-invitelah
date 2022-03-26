@@ -1,15 +1,15 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/invitation.controller");
 const controllerType = require("../controllers/invitationType.controller");
-const uploadFilesMiddleware = require("../middleware/upload");
+const uploadFilesMiddleware = require("../middleware/uploadAvatar");
 const api = require("../config/api");
 const {
   validateOne,
   validateUpdate,
   validateOneType,
   validateUpdateType,
+  validateCreate,
 } = require("../middleware/validation/invitationValidation");
-const { validateTitle } = require("../middleware/globalValidation");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -22,7 +22,7 @@ module.exports = function (app) {
 
   app.post(
     `${api.URL}/invitation`,
-    [authJwt.verifyToken, validateTitle],
+    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
     controller.create
   );
   app.get(`${api.URL}/invitation`, authJwt.verifyToken, controller.findAll);
