@@ -89,7 +89,7 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined) {
+      if (req.file !== undefined && data.image !== "") {
         fs.unlink("./upload/images/" + data.image, (err) => {
           if (err) throw err;
         });

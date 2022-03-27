@@ -78,6 +78,34 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findByInvitationId = (req, res) => {
+  const id = req.params.id;
+
+  Background.findAll({
+    where: { invitationId: id },
+    include: { model: db.invitation },
+    order: [["updatedAt", "DESC"]],
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find Background with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving Background with id=" + id,
+      });
+    });
+};
+
 // Update a Background by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
@@ -86,7 +114,7 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined) {
+      if (req.file !== undefined && data.image !== "") {
         fs.unlink("./upload/images/" + data.image, (err) => {
           if (err) throw err;
         });

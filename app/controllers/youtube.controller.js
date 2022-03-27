@@ -70,6 +70,35 @@ exports.findOne = (req, res) => {
     });
 };
 
+
+exports.findByInvitationId = (req, res) => {
+  const id = req.params.id;
+
+  Youtube.findAll({
+    where: { invitationId: id },
+    include: { model: db.invitation },
+    order: [["updatedAt", "DESC"]],
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find Youtube with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving Youtube with id=" + id,
+      });
+    });
+};
+
 // Update a Youtube by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;

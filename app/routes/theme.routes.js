@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId,
 } = require("../middleware/validation/themeValidation");
 
 module.exports = function (app) {
@@ -19,7 +20,7 @@ module.exports = function (app) {
 
   app.post(
     `${api.URL}/theme`,
-    [authJwt.verifyToken, validateCreate],
+    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
     controller.create
   );
   app.get(`${api.URL}/theme`, authJwt.verifyToken, controller.findAll);
@@ -27,6 +28,11 @@ module.exports = function (app) {
     `${api.URL}/theme/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
+  );
+  app.get(
+    `${api.URL}/theme-invitation/:id`,
+    [authJwt.verifyToken, validateByInvitationId],
+    controller.findByInvitationId
   );
   app.patch(
     `${api.URL}/theme/:id`,

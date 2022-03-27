@@ -6,6 +6,7 @@ const { validateName } = require("../middleware/globalValidation");
 const {
   validateOne,
   validateUpdate,
+  validateByInvitationId,
 } = require("../middleware/validation/backgroundValidation");
 
 module.exports = function (app) {
@@ -23,7 +24,8 @@ module.exports = function (app) {
     controller.create
   );
   app.get(`${api.URL}/background`, authJwt.verifyToken, controller.findAll);
-  app.get(`${api.URL}/background/:id`, validateOne, controller.findOne);
+  app.get(`${api.URL}/background/:id`, authJwt.verifyToken, validateOne, controller.findOne);
+  app.get(`${api.URL}/background-invitation/:id`, [authJwt.verifyToken, validateByInvitationId], controller.findByInvitationId);
   app.patch(
     `${api.URL}/background/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],

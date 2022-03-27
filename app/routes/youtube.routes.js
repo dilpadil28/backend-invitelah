@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId,
 } = require("../middleware/validation/youtubeValidation");
 
 module.exports = function (app) {
@@ -17,12 +18,17 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`${api.URL}/youtube`, [authJwt.verifyToken], controller.create);
+  app.post(`${api.URL}/youtube`, [uploadFilesMiddleware, authJwt.verifyToken, validateCreate,], controller.create);
   app.get(`${api.URL}/youtube`, authJwt.verifyToken, controller.findAll);
   app.get(
     `${api.URL}/youtube/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
+  );
+  app.get(
+    `${api.URL}/youtube-invitation/:id`,
+    [authJwt.verifyToken, validateByInvitationId],
+    controller.findByInvitationId
   );
   app.patch(
     `${api.URL}/youtube/:id`,

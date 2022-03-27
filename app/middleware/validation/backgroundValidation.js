@@ -1,5 +1,7 @@
 const { body, validationResult, param } = require("express-validator");
-const background = require("../../db/models/background");
+const db = require("../../db/models");
+const Background = db.background;
+
 module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
@@ -24,12 +26,40 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await background.findOne({ where: { id: value } });
+        const checking = await Background.findOne({ where: { id: value } });
         if (checking === null) {
           return Promise.reject();
         }
       })
       .withMessage("param id not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateByInvitationId: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .bail()
+      .isNumeric()
+      .withMessage("invitation id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await Background.findOne({ where: { invitationId: value }, });
+
+
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param invitation id not found"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -50,7 +80,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await background.findOne({ where: { id: value } });
+        const checking = await Background.findOne({ where: { id: value } });
         if (checking === null) {
           return Promise.reject();
         }

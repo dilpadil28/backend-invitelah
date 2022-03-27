@@ -68,6 +68,34 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findByInvitationId = (req, res) => {
+  const id = req.params.id;
+
+  Theme.findAll({
+    where: { invitationId: id },
+    include: { model: db.invitation },
+    order: [["updatedAt", "DESC"]],
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find Theme with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving Theme with id=" + id,
+      });
+    });
+};
+
 // Update a Theme by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;

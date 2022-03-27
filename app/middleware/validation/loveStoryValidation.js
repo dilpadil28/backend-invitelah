@@ -1,9 +1,12 @@
 const { body, validationResult, param } = require("express-validator");
-const { loveStory } = require("../../db/models");
+const db = require("../../db/models");
+const LoveStory = db.loveStory;
+
 module.exports = {
   validateCreate: [
     body("title").notEmpty().withMessage("title is required"),
-    body("descrtiption").notEmpty().withMessage("descrtiption is required"),
+    body("description").notEmpty().withMessage("description is required"),
+    body("date").notEmpty().withMessage("date is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -24,7 +27,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await loveStory.findOne({
+        const checking = await LoveStory.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -32,6 +35,32 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateByInvitationId: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .bail()
+      .isNumeric()
+      .withMessage("invitation id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await LoveStory.findOne({ where: { invitationId: value }, });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param invitation id not found"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -52,7 +81,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await loveStory.findOne({
+        const checking = await LoveStory.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -61,7 +90,8 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("title").notEmpty().withMessage("title is required"),
-    body("descrtiption").notEmpty().withMessage("descrtiption is required"),
+    body("description").notEmpty().withMessage("description is required"),
+    body("date").notEmpty().withMessage("date is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

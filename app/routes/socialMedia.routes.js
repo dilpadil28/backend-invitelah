@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId,
 } = require("../middleware/validation/socialMediaValidation");
 
 module.exports = function (app) {
@@ -17,25 +18,30 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`${api.URL}/socialmedia`, [authJwt.verifyToken], controller.create);
-  app.get(`${api.URL}/socialmedia`, authJwt.verifyToken, controller.findAll);
+  app.post(`${api.URL}/social-media`, [uploadFilesMiddleware, authJwt.verifyToken, validateCreate], controller.create);
+  app.get(`${api.URL}/social-media`, authJwt.verifyToken, controller.findAll);
   app.get(
-    `${api.URL}/socialmedia/:id`,
+    `${api.URL}/social-media/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
+  app.get(
+    `${api.URL}/social-media-invitation/:id`,
+    [authJwt.verifyToken, validateByInvitationId],
+    controller.findByInvitationId
+  );
   app.patch(
-    `${api.URL}/socialmedia/:id`,
+    `${api.URL}/social-media/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
   );
   app.delete(
-    `${api.URL}/socialmedia/:id`,
+    `${api.URL}/social-media/:id`,
     [authJwt.verifyToken, validateOne],
     controller.delete
   );
   app.delete(
-    `${api.URL}/socialmedia`,
+    `${api.URL}/social-media`,
     authJwt.verifyToken,
     controller.deleteAll
   );

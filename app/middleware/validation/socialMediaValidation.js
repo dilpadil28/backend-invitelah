@@ -1,5 +1,7 @@
 const { body, validationResult, param } = require("express-validator");
-const { socialMedia } = require("../../db/models");
+const db = require("../../db/models");
+const SocialMedia = db.socialMedia;
+
 module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
@@ -25,7 +27,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await socialMedia.findOne({
+        const checking = await SocialMedia.findOne({
           where: { id: value },
         });
         if (checking === null) {
@@ -33,6 +35,32 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
+  validateByInvitationId: [
+    param("id")
+      .notEmpty()
+      .withMessage("param is required")
+      .bail()
+      .isNumeric()
+      .withMessage("invitation id must be an number")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await SocialMedia.findOne({ where: { invitationId: value }, });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param invitation id not found"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -53,7 +81,7 @@ module.exports = {
       .withMessage("id must be an number")
       .bail()
       .custom(async (value, { req }) => {
-        const checking = await socialMedia.findOne({
+        const checking = await SocialMedia.findOne({
           where: { id: value },
         });
         if (checking === null) {

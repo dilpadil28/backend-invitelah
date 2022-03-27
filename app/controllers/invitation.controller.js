@@ -54,6 +54,7 @@ exports.findAll = (req, res) => {
 
   Invitation.findAll({
     where: condition,
+    order: [["updatedAt", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
@@ -100,7 +101,6 @@ exports.findOne = (req, res) => {
 // Update a Invitation by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
-  console.log('req.file', req.file)
 
   Invitation.findOne({
     where: { id: id },

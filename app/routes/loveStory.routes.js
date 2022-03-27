@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId,
 } = require("../middleware/validation/loveStoryValidation");
 
 module.exports = function (app) {
@@ -17,22 +18,31 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`${api.URL}/lovestory`, [authJwt.verifyToken]);
-  app.get(`${api.URL}/lovestory`, authJwt.verifyToken, controller.findAll);
+  app.post(
+    `${api.URL}/love-story`,
+    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
+    controller.create
+  );
+  app.get(`${api.URL}/love-story`, authJwt.verifyToken, controller.findAll);
   app.get(
-    `${api.URL}/lovestory/:id`,
+    `${api.URL}/love-story/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
   );
+  app.get(
+    `${api.URL}/love-story-invitation/:id`,
+    [authJwt.verifyToken, validateByInvitationId],
+    controller.findByInvitationId
+  );
   app.patch(
-    `${api.URL}/lovestory/:id`,
+    `${api.URL}/love-story/:id`,
     [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
     controller.update
   );
   app.delete(
-    `${api.URL}/lovestory/:id`,
+    `${api.URL}/love-story/:id`,
     [authJwt.verifyToken, validateOne],
     controller.delete
   );
-  app.delete(`${api.URL}/lovestory`, authJwt.verifyToken, controller.deleteAll);
+  app.delete(`${api.URL}/love-story`, authJwt.verifyToken, controller.deleteAll);
 };

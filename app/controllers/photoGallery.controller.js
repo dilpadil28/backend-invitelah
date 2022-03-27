@@ -9,7 +9,8 @@ exports.create = (req, res) => {
   const photoGallery = {
     title: req.body.title,
     image: req.file === undefined ? "" : req.file.filename,
-    descrtiption: req.body.descrtiption,
+    description: req.body.description,
+    published: req.body.published,
     invitationId: req.body.invitationId,
   };
 
@@ -79,6 +80,35 @@ exports.findOne = (req, res) => {
     });
 };
 
+
+exports.findByInvitationId = (req, res) => {
+  const id = req.params.id;
+
+  PhotoGallery.findAll({
+    where: { invitationId: id },
+    include: { model: db.invitation },
+    order: [["updatedAt", "DESC"]],
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find PhotoGallery with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving PhotoGallery with id=" + id,
+      });
+    });
+};
+
 // Update a PhotoGallery by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
@@ -87,7 +117,7 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined) {
+      if (req.file !== undefined && data.image !== "") {
         fs.unlink("./upload/images/" + data.image, (err) => {
           if (err) throw err;
         });
@@ -96,6 +126,8 @@ exports.update = (req, res) => {
         .update({
           title: req.body.title,
           image: req.file === undefined ? data.image : req.file.filename,
+          description: req.body.description,
+          published: req.body.published,
         })
         .then(() => {
           res.status(200).send({

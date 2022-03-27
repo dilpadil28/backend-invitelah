@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId,
 } = require("../middleware/validation/presenceValidation");
 
 module.exports = function (app) {
@@ -17,12 +18,17 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(`${api.URL}/presence`, [validateCreate], controller.create);
+  app.post(`${api.URL}/presence`, [uploadFilesMiddleware, validateCreate], controller.create);
   app.get(`${api.URL}/presence`, authJwt.verifyToken, controller.findAll);
   app.get(
     `${api.URL}/presence/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
+  );
+  app.get(
+    `${api.URL}/presence-invitation/:id`,
+    [authJwt.verifyToken, validateByInvitationId],
+    controller.findByInvitationId
   );
   app.patch(
     `${api.URL}/presence/:id`,
