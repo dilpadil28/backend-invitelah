@@ -9,6 +9,7 @@ exports.create = (req, res) => {
   const background = {
     name: req.body.name,
     image: req.file === undefined ? "" : req.file.filename,
+    published: req.body.published,
     invitationId: req.body.invitationId,
   };
 
@@ -123,6 +124,7 @@ exports.update = (req, res) => {
         .update({
           name: req.body.name,
           image: req.file === undefined ? data.image : req.file.filename,
+          published: req.body.published,
         })
         .then(() => {
           res.status(200).send({

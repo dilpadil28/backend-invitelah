@@ -34,6 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       backgoundColor: {
         type: DataTypes.STRING,
       },
+      backgoundImage: {
+        type: DataTypes.STRING,
+      },
+      publishProkes: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       sequelize,

@@ -110,6 +110,20 @@ db.invitation.hasMany(db.youtube, {
   foreignKey: "invitationId",
   constraints: false,
 });
+db.youtube.belongsTo(db.invitation, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+  constraints: false,
+});
+db.invitation.hasMany(db.message, {
+  foreignKey: "invitationId",
+  constraints: false,
+});
+db.message.belongsTo(db.invitation, {
+  foreignKey: "invitationId",
+  targetKey: "id",
+  constraints: false,
+});
 
 db.priceList.belongsTo(db.invitation, {
   foreignKey: "invitationId",
@@ -120,11 +134,6 @@ db.invitation.hasOne(db.priceList, {
   targetKey: "id",
 });
 
-db.youtube.belongsTo(db.invitation, {
-  foreignKey: "invitationId",
-  targetKey: "id",
-  constraints: false,
-});
 db.invitation.hasMany(db.socialMedia, {
   foreignKey: "invitationId",
   constraints: false,

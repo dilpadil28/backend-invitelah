@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       message: DataTypes.TEXT,
       confirmation: DataTypes.STRING,
+      phoneNumber: DataTypes.STRING,
+      total: DataTypes.STRING,
       published: DataTypes.BOOLEAN,
     },
     {
