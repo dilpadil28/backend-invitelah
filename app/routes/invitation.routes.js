@@ -9,6 +9,7 @@ const {
   validateOneType,
   validateUpdateType,
   validateCreate,
+  validateSlug,
 } = require("../middleware/validation/invitationValidation");
 
 module.exports = function (app) {
@@ -30,6 +31,11 @@ module.exports = function (app) {
     `${api.URL}/invitation/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
+  );
+  app.get(
+    `${api.URL}/invitation/slug/:slug`,
+    [validateSlug],
+    controller.findBySlug
   );
   app.patch(
     `${api.URL}/invitation/:id`,

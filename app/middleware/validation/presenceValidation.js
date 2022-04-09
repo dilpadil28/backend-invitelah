@@ -5,6 +5,7 @@ module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
     body("message").notEmpty().withMessage("message is required"),
+    body("phoneNumber").notEmpty().withMessage("phoneNumber is required"),
     body("confirmation").notEmpty().withMessage("confirmation is required"),
     (req, res, next) => {
       const error = validationResult(req);

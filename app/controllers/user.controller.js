@@ -52,7 +52,7 @@ exports.findAll = (req, res) => {
 
   User.findAll({
     where: condition,
-    order: [["updatedAt", "DESC"]],
+    order: [["id", "DESC"]],
     include: {
       model: db.role,
       attributes: ["id", "name"],
@@ -180,7 +180,7 @@ exports.delete = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      console.log("data", data.image);
+
       data
         .destroy()
         .then(() => {

@@ -5,7 +5,6 @@ const LoveStory = db.loveStory;
 module.exports = {
   validateCreate: [
     body("title").notEmpty().withMessage("title is required"),
-    body("description").notEmpty().withMessage("description is required"),
     body("date").notEmpty().withMessage("date is required"),
     (req, res, next) => {
       const error = validationResult(req);
@@ -90,7 +89,6 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("title").notEmpty().withMessage("title is required"),
-    body("description").notEmpty().withMessage("description is required"),
     body("date").notEmpty().withMessage("date is required"),
     (req, res, next) => {
       const error = validationResult(req);

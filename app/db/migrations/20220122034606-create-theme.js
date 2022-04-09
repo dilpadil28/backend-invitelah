@@ -26,7 +26,7 @@ module.exports = {
       fontColor2: {
         type: Sequelize.STRING,
       },
-      backgoundColor: {
+      backgroundColor: {
         type: Sequelize.STRING,
       },
       createdAt: {

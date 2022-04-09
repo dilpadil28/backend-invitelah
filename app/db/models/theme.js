@@ -31,10 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       fontColor2: {
         type: DataTypes.STRING,
       },
-      backgoundColor: {
+      backgroundColor: {
         type: DataTypes.STRING,
       },
-      backgoundImage: {
+      backgroundImage: {
         type: DataTypes.STRING,
       },
       publishProkes: {

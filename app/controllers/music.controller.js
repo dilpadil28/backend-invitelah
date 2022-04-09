@@ -34,6 +34,7 @@ exports.findAll = (req, res) => {
 
   Music.findAll({
     where: condition,
+    order: [["id", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
@@ -84,7 +85,7 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined && data.image !== "") {
+      if (req.file !== undefined && data.song !== "") {
         fs.unlink("./upload/files/songs/" + data.song, (err) => {
           if (err) throw err;
         });

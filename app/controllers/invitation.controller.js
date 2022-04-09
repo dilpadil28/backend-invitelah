@@ -34,10 +34,12 @@ exports.create = (req, res) => {
   };
   Invitation.create(invitation)
     .then((data) => {
-      res.status(201).json({
-        message: "success",
-        data: data,
-      });
+      data.setInvitationTypes([1]).then(() => {
+        res.status(201).json({
+          message: "success",
+          data: data,
+        });
+      })
     })
     .catch((err) => {
       res.status(500).send({
@@ -54,7 +56,7 @@ exports.findAll = (req, res) => {
 
   Invitation.findAll({
     where: condition,
-    order: [["updatedAt", "DESC"]],
+    order: [["id", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
@@ -94,6 +96,31 @@ exports.findOne = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message: "Error retrieving Invitation with id=" + id,
+      });
+    });
+};
+exports.findBySlug = (req, res) => {
+  const slug = req.params.slug;
+
+  Invitation.findOne({
+    where: { slug: slug },
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find Invitation with slug=${slug}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving Invitation with slug=" + slug,
       });
     });
 };
@@ -168,7 +195,7 @@ exports.delete = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      console.log("data", data.image);
+
       data
         .destroy()
         .then(() => {

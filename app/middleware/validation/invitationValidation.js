@@ -66,6 +66,31 @@ module.exports = {
       next();
     },
   ],
+  validateSlug: [
+    param("slug")
+      .notEmpty()
+      .withMessage("param is required")
+      .bail()
+      .custom(async (value, { req }) => {
+        const checking = await invitation.findOne({
+          where: { slug: value },
+        });
+        if (checking === null) {
+          return Promise.reject();
+        }
+      })
+      .withMessage("param slug not found"),
+    (req, res, next) => {
+      const error = validationResult(req);
+      if (!error.isEmpty()) {
+        return res.status(422).json({
+          message: "error",
+          error: error.array(),
+        });
+      }
+      next();
+    },
+  ],
   validateUpdate: [
     param("id")
       .notEmpty()

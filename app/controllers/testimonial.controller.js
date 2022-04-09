@@ -36,7 +36,7 @@ exports.findAll = (req, res) => {
 
   Testimonial.findAll({
     where: condition,
-    order: [["updatedAt", "DESC"]],
+    order: [["id", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {

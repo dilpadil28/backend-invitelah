@@ -76,7 +76,7 @@ exports.findByInvitationId = (req, res) => {
   LoveStory.findAll({
     where: { invitationId: id },
     include: { model: db.invitation },
-    order: [["updatedAt", "DESC"]],
+    order: [["id", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
@@ -136,7 +136,7 @@ exports.delete = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      console.log("data", data.image);
+
       data
         .destroy()
         .then(() => {

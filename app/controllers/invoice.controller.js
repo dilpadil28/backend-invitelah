@@ -107,7 +107,7 @@ exports.delete = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      console.log("data", data.image);
+
       data
         .destroy()
         .then(() => {

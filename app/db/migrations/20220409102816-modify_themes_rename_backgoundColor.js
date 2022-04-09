@@ -4,7 +4,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.addColumn("themes", "backgroundImage", {
       type: Sequelize.STRING,
-      after: "backgroundColor",
+      after: "backgoundColor",
     },
     );
     await queryInterface.addColumn("themes", "publishProkes", {
@@ -17,5 +17,17 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.removeColumn("themes", "backgroundImage");
     await queryInterface.removeColumn("themes", "publishProkes");
+  },
+};
+'use strict';
+
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.renameColumn("themes", "backgoundColor", 'backgroundColor'
+    );
+  },
+
+  async down(queryInterface, Sequelize) {
+    await queryInterface.removeColumn("themes", "backgroundColor");
   },
 };

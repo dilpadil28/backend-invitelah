@@ -88,7 +88,7 @@ exports.findByInvitationId = (req, res) => {
   DigitalEnvelope.findAll({
     where: { invitationId: id },
     include: { model: db.invitation },
-    order: [["updatedAt", "DESC"]],
+    order: [["id", "DESC"]],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {

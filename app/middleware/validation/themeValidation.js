@@ -57,17 +57,7 @@ module.exports = {
       .withMessage("param is required")
       .bail()
       .isNumeric()
-      .withMessage("invitation id must be an number")
-      .bail()
-      .custom(async (value, { req }) => {
-        const checking = await Theme.findOne({ where: { invitationId: value }, });
-
-
-        if (checking === null) {
-          return Promise.reject();
-        }
-      })
-      .withMessage("param invitation id not found"),
+      .withMessage("invitation id must be an number"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
