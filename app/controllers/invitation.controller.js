@@ -129,11 +129,11 @@ exports.findBySlug = (req, res) => {
         // where: { published: true },
         attributes: { exclude: ["createdAt", "updatedAt"] },
       },
-      {
-        model: db.presence,
-        // where: { published: true },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-      },
+      // {
+      //   model: db.presence,
+      //   // where: { published: true },
+      //   attributes: { exclude: ["createdAt", "updatedAt"] },
+      // },
       {
         model: db.socialMedia,
         attributes: { exclude: ["createdAt", "updatedAt"] },
