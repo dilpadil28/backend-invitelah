@@ -14,6 +14,7 @@ module.exports = {
         });
       })
       .withMessage("Failed! Slug is already in use!"),
+    body("userId").notEmpty().withMessage("User is required"),
     body("namaPria").notEmpty().withMessage("Nama Pria is required"),
     body("namaPendekPria").notEmpty().withMessage("Nama Pendek Pria is required"),
     body("namaOrangTuaPria").notEmpty().withMessage("Nama Orang Tua Pria is required"),
@@ -107,6 +108,7 @@ module.exports = {
         }
       })
       .withMessage("param id not found"),
+    body("userId").notEmpty().withMessage("User is required"),
     body("slug").notEmpty().withMessage("Slug is required"),
     body("namaPria").notEmpty().withMessage("Nama Pria is required"),
     body("namaPendekPria").notEmpty().withMessage("Nama Pendek Pria is required"),

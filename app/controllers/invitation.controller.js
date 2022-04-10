@@ -104,6 +104,54 @@ exports.findBySlug = (req, res) => {
 
   Invitation.findOne({
     where: { slug: slug },
+    include: [
+      {
+        model: db.background,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.digitalEnvelope,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.loveStory,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.message,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.photoGallery,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.presence,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.socialMedia,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.theme,
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.youtube,
+        // where: { published: true },
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+      },
+      {
+        model: db.user,
+        attributes: ["id", "username", "fullName", "phoneNumber", "email"],
+      },
+    ],
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {

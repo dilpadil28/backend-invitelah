@@ -4,6 +4,7 @@ const Theme = db.theme;
 module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
+    body("musicId").notEmpty().withMessage("Music is required"),
     body("galleryType").notEmpty().withMessage("galleryType is required"),
     body("fontType1").notEmpty().withMessage("fontType1 is required"),
     body("fontType2").notEmpty().withMessage("fontType2 is required"),
@@ -87,6 +88,7 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
+    body("musicId").notEmpty().withMessage("Music is required"),
     body("galleryType").notEmpty().withMessage("galleryType is required"),
     body("fontType1").notEmpty().withMessage("fontType1 is required"),
     body("fontType2").notEmpty().withMessage("fontType2 is required"),
