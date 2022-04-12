@@ -23,7 +23,8 @@ var storage = multer.diskStorage({
 var uploadFiles = multer({
   storage: storage,
   limits: { fileSize: maxSize },
-}).single("avatar");
+}).fields([{ name: "avatarPasangan", maxCount: 1 }, { name: "avatarPria", maxCount: 1 }, { name: "avatarWanita", maxCount: 1 }]);
+
 
 var uploadFilesMiddleware = util.promisify(uploadFiles);
 module.exports = uploadFilesMiddleware;

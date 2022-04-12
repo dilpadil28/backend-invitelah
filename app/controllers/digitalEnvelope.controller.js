@@ -5,17 +5,8 @@ const fs = require("fs");
 
 // Create and Save a new DigitalEnvelope
 exports.create = (req, res) => {
-  // Create a DigitalEnvelope
-  const digitalEnvelope = {
-    name: req.body.name,
-    number: req.body.number,
-    published: req.body.published,
-    image: req.file === undefined ? "" : req.file.filename,
-    invitationId: req.body.invitationId,
-  };
-
   // Save DigitalEnvelope in the database
-  DigitalEnvelope.create(digitalEnvelope)
+  DigitalEnvelope.create(req.body)
     .then((data) => {
       res.status(201).json({
         message: "success",
@@ -118,18 +109,8 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined && data.image !== "") {
-        fs.unlink("./upload/images/" + data.image, (err) => {
-          if (err) throw err;
-        });
-      }
       data
-        .update({
-          name: req.body.name,
-          number: req.body.number,
-          published: req.body.published,
-          image: req.file === undefined ? "" : req.file.filename,
-        })
+        .update(req.body)
         .then(() => {
           res.status(200).send({
             message: "success",
@@ -165,11 +146,6 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
-          if (data.image !== "") {
-            fs.unlink("./upload/images/" + data.image, (err) => {
-              if (err) throw err;
-            });
-          }
         })
         .catch((err) => {
           res.status(500).send({

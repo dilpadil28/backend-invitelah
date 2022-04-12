@@ -7,13 +7,15 @@ exports.create = (req, res) => {
   // Save Invitation in the database
   let invitation = {
     slug: req.body.slug,
+    avatarPria: req.files.avatarPria === undefined ? "" : req.files.avatarPria[0].filename,
     namaPria: req.body.namaPria,
     namaPendekPria: req.body.namaPendekPria,
     namaOrangTuaPria: req.body.namaOrangTuaPria,
+    avatarWanita: req.file === undefined ? "" : req.files.avatarWanita[0].filename,
     namaWanita: req.body.namaWanita,
     namaPendekWanita: req.body.namaPendekWanita,
     namaOrangTuaWanita: req.body.namaOrangTuaWanita,
-    avatar: req.file === undefined ? "" : req.file.filename,
+    avatarPasangan: req.files.avatarPasangan === undefined ? "" : req.files.avatarPasangan[0].filename,
     alamatKado: req.body.alamatKado,
     tanggalNikah: req.body.tanggalNikah,
     jamNikah: req.body.jamNikah,
@@ -182,21 +184,33 @@ exports.update = (req, res) => {
     attributes: { exclude: ["createdAt", "updatedAt"] },
   })
     .then((data) => {
-      if (req.file !== undefined && data.avatar !== "") {
-        fs.unlink("./upload/images/" + data.avatar, (err) => {
+      if (req.files.avatarPria !== undefined && data.avatarPria !== "") {
+        fs.unlink("./upload/images/" + data.avatarPria, (err) => {
+          if (err) throw err;
+        });
+      }
+      if (req.files.avatarWanita !== undefined && data.avatarWanita !== "") {
+        fs.unlink("./upload/images/" + data.avatarWanita, (err) => {
+          if (err) throw err;
+        });
+      }
+      if (req.files.avatarPasangan !== undefined && data.avatarPasangan !== "") {
+        fs.unlink("./upload/images/" + data.avatarPasangan, (err) => {
           if (err) throw err;
         });
       }
       data
         .update({
           slug: req.body.slug,
+          avatarPria: req.files.avatarPria === undefined ? "" : req.files.avatarPria.filename,
           namaPria: req.body.namaPria,
           namaPendekPria: req.body.namaPendekPria,
           namaOrangTuaPria: req.body.namaOrangTuaPria,
+          avatarWanita: req.file === undefined ? "" : req.files.avatarWanita[0].filename,
           namaWanita: req.body.namaWanita,
           namaPendekWanita: req.body.namaPendekWanita,
           namaOrangTuaWanita: req.body.namaOrangTuaWanita,
-          avatar: req.file === undefined ? data.avatar : req.file.filename,
+          avatarPasangan: req.files.avatarPasangan === undefined ? "" : req.files.avatarPasangan[0].filename,
           alamatKado: req.body.alamatKado,
           tanggalNikah: req.body.tanggalNikah,
           jamNikah: req.body.jamNikah,
@@ -251,6 +265,21 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
+          if (data.avatarPasangan !== "") {
+            fs.unlink("./upload/images/" + data.avatarPasangan, (err) => {
+              if (err) throw err;
+            });
+          }
+          if (data.avatarPria !== "") {
+            fs.unlink("./upload/images/" + data.avatarPria, (err) => {
+              if (err) throw err;
+            });
+          }
+          if (data.avatarWanita !== "") {
+            fs.unlink("./upload/images/" + data.avatarWanita, (err) => {
+              if (err) throw err;
+            });
+          }
         })
         .catch((err) => {
           res.status(500).send({

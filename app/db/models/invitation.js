@@ -16,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
       slug: {
         type: DataTypes.STRING,
       },
+      avatarPria: {
+        type: DataTypes.STRING,
+      },
       namaPria: {
         type: DataTypes.STRING,
       },
@@ -23,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       namaOrangTuaPria: {
+        type: DataTypes.STRING,
+      },
+      avatarWanita: {
         type: DataTypes.STRING,
       },
       namaWanita: {
@@ -34,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       namaOrangTuaWanita: {
         type: DataTypes.STRING,
       },
-      avatar: {
+      avatarPasangan: {
         type: DataTypes.STRING,
       },
       alamatKado: {

@@ -6,6 +6,7 @@ const {
   validateOne,
   validateUpdate,
   validateCreate,
+  validateByInvitationId
 } = require("../middleware/validation/messageValidation");
 
 module.exports = function (app) {
@@ -23,6 +24,11 @@ module.exports = function (app) {
     `${api.URL}/message/:id`,
     [authJwt.verifyToken, validateOne],
     controller.findOne
+  );
+  app.get(
+    `${api.URL}/message-invitation/:id`,
+    [validateByInvitationId],
+    controller.findByInvitationId
   );
   app.patch(
     `${api.URL}/message/:id`,

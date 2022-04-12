@@ -4,8 +4,8 @@ const Presence = db.presence;
 module.exports = {
   validateCreate: [
     body("name").notEmpty().withMessage("name is required"),
-    body("message").notEmpty().withMessage("message is required"),
-    body("phoneNumber").notEmpty().withMessage("phoneNumber is required"),
+    // body("message").notEmpty().withMessage("message is required"),
+    body("phoneNumber").notEmpty().withMessage("phone number is required"),
     body("confirmation").notEmpty().withMessage("confirmation is required"),
     (req, res, next) => {
       const error = validationResult(req);
@@ -92,7 +92,8 @@ module.exports = {
       })
       .withMessage("param id not found"),
     body("name").notEmpty().withMessage("name is required"),
-    body("message").notEmpty().withMessage("message is required"),
+    // body("message").notEmpty().withMessage("message is required"),
+    body("phoneNumber").notEmpty().withMessage("phone number is required"),
     body("confirmation").notEmpty().withMessage("confirmation is required"),
     (req, res, next) => {
       const error = validationResult(req);

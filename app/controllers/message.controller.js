@@ -69,6 +69,33 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findByInvitationId = (req, res) => {
+  const id = req.params.id;
+
+  Message.findAll({
+    where: { invitationId: id },
+    order: [["id", "DESC"]],
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+  })
+    .then((data) => {
+      if (data) {
+        res.status(200).send({
+          message: "success",
+          data: data,
+        });
+      } else {
+        res.status(404).send({
+          message: `Cannot find Message with id=${id}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving Message with id=" + id,
+      });
+    });
+};
+
 // Update a Message by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;

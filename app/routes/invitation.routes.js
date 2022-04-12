@@ -1,7 +1,7 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/invitation.controller");
 const controllerType = require("../controllers/invitationType.controller");
-const uploadFilesMiddleware = require("../middleware/uploadAvatar");
+const uploadFilesMiddlewarePasangan = require("../middleware/uploadAvatarPasangan");
 const api = require("../config/api");
 const {
   validateOne,
@@ -23,7 +23,7 @@ module.exports = function (app) {
 
   app.post(
     `${api.URL}/invitation`,
-    [uploadFilesMiddleware, authJwt.verifyToken, validateCreate],
+    [uploadFilesMiddlewarePasangan, authJwt.verifyToken, validateCreate],
     controller.create
   );
   app.get(`${api.URL}/invitation`, authJwt.verifyToken, controller.findAll);
@@ -39,7 +39,7 @@ module.exports = function (app) {
   );
   app.patch(
     `${api.URL}/invitation/:id`,
-    [uploadFilesMiddleware, authJwt.verifyToken, validateUpdate],
+    [uploadFilesMiddlewarePasangan, authJwt.verifyToken, validateUpdate],
     controller.update
   );
   app.delete(
@@ -55,7 +55,7 @@ module.exports = function (app) {
 
   app.post(
     `${api.URL}/invitationtype`,
-    [uploadFilesMiddleware, authJwt.verifyToken],
+    [uploadFilesMiddlewarePasangan, authJwt.verifyToken],
     controllerType.create
   );
   app.get(
@@ -70,7 +70,7 @@ module.exports = function (app) {
   );
   app.patch(
     `${api.URL}/invitationtype/:id`,
-    [uploadFilesMiddleware, authJwt.verifyToken, validateUpdateType],
+    [uploadFilesMiddlewarePasangan, authJwt.verifyToken, validateUpdateType],
     controllerType.update
   );
   app.delete(
