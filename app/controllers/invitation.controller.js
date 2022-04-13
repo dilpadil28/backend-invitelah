@@ -142,16 +142,13 @@ exports.findBySlug = (req, res) => {
       },
       {
         model: db.theme,
+        include: { model: db.music, attributes: { exclude: ["createdAt", "updatedAt"] }, },
         attributes: { exclude: ["createdAt", "updatedAt"] },
       },
       {
         model: db.youtube,
         // where: { published: true },
         attributes: { exclude: ["createdAt", "updatedAt"] },
-      },
-      {
-        model: db.user,
-        attributes: ["id", "username", "fullName", "phoneNumber", "email"],
       },
     ],
     attributes: { exclude: ["createdAt", "updatedAt"] },
