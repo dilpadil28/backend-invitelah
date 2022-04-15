@@ -37,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
       backgroundImage: {
         type: DataTypes.STRING,
       },
+      cardColor: {
+        type: DataTypes.STRING,
+      },
       publishProkes: {
         type: DataTypes.BOOLEAN,
       },

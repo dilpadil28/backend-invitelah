@@ -13,6 +13,7 @@ exports.create = (req, res) => {
     fontColor2: req.body.fontColor2,
     backgroundColor: req.body.backgroundColor,
     backgroundImage: req.file === undefined ? "" : req.file.filename,
+    cardColor: req.body.cardColor,
     publishProkes: req.body.publishProkes,
     invitationId: req.body.invitationId,
     musicId: req.body.musicId,
@@ -134,6 +135,7 @@ exports.update = (req, res) => {
           fontColor2: req.body.fontColor2,
           backgroundColor: req.body.backgroundColor,
           backgroundImage: req.file === undefined ? "" : req.file.filename,
+          cardColor: req.body.cardColor,
           publishProkes: req.body.published,
           musicId: req.body.musicId,
         })

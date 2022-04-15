@@ -12,6 +12,7 @@ module.exports = {
     body("backgroundColor")
       .notEmpty()
       .withMessage("backgroundColor is required"),
+    body("cardColor").notEmpty().withMessage("cardColor is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {
@@ -96,6 +97,7 @@ module.exports = {
     body("backgroundColor")
       .notEmpty()
       .withMessage("backgroundColor is required"),
+    body("cardColor").notEmpty().withMessage("cardColor is required"),
     (req, res, next) => {
       const error = validationResult(req);
       if (!error.isEmpty()) {

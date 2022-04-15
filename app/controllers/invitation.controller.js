@@ -33,6 +33,7 @@ exports.create = (req, res) => {
     doa: req.body.doa,
     turutMengundang: req.body.turutMengundang,
     privateLink: (Math.random() + 1).toString(36).substring(7),
+    userId: req.body.userId,
   };
   Invitation.create(invitation)
     .then((data) => {
