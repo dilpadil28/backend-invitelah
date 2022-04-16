@@ -11,7 +11,7 @@ exports.create = (req, res) => {
     namaPria: req.body.namaPria,
     namaPendekPria: req.body.namaPendekPria,
     namaOrangTuaPria: req.body.namaOrangTuaPria,
-    avatarWanita: req.file === undefined ? "" : req.files.avatarWanita[0].filename,
+    avatarWanita: req.files.avatarWanita === undefined ? "" : req.files.avatarWanita[0].filename,
     namaWanita: req.body.namaWanita,
     namaPendekWanita: req.body.namaPendekWanita,
     namaOrangTuaWanita: req.body.namaOrangTuaWanita,
@@ -200,15 +200,15 @@ exports.update = (req, res) => {
       data
         .update({
           slug: req.body.slug,
-          avatarPria: req.files.avatarPria === undefined ? "" : req.files.avatarPria.filename,
+          avatarPria: req.files.avatarPria === undefined ? data.avatarPria : req.files.avatarPria[0].filename,
           namaPria: req.body.namaPria,
           namaPendekPria: req.body.namaPendekPria,
           namaOrangTuaPria: req.body.namaOrangTuaPria,
-          avatarWanita: req.file === undefined ? "" : req.files.avatarWanita[0].filename,
+          avatarWanita: req.files.avatarWanita === undefined ? data.avatarWanita : req.files.avatarWanita[0].filename,
           namaWanita: req.body.namaWanita,
           namaPendekWanita: req.body.namaPendekWanita,
           namaOrangTuaWanita: req.body.namaOrangTuaWanita,
-          avatarPasangan: req.files.avatarPasangan === undefined ? "" : req.files.avatarPasangan[0].filename,
+          avatarPasangan: req.files.avatarPasangan === undefined ? data.avatarPasangan : req.files.avatarPasangan[0].filename,
           alamatKado: req.body.alamatKado,
           tanggalNikah: req.body.tanggalNikah,
           jamNikah: req.body.jamNikah,
@@ -263,17 +263,17 @@ exports.delete = (req, res) => {
             message: "success",
             data: data,
           });
-          if (data.avatarPasangan !== "") {
+          if (data.avatarPasangan !== "" || data.avatarPasangan !== NULL) {
             fs.unlink("./upload/images/" + data.avatarPasangan, (err) => {
               if (err) throw err;
             });
           }
-          if (data.avatarPria !== "") {
+          if (data.avatarPria !== "" || data.avatarPria !== NULL) {
             fs.unlink("./upload/images/" + data.avatarPria, (err) => {
               if (err) throw err;
             });
           }
-          if (data.avatarWanita !== "") {
+          if (data.avatarWanita !== "" || data.avatarWanita !== NULL) {
             fs.unlink("./upload/images/" + data.avatarWanita, (err) => {
               if (err) throw err;
             });

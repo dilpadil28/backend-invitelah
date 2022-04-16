@@ -1,20 +1,37 @@
 const config = require("../../config/database");
 
 const Sequelize = require("sequelize");
+// const sequelize = new Sequelize(
+//   config.development.database,
+//   config.development.username,
+//   config.development.password,
+//   {
+//     host: config.development.host,
+//     dialect: config.development.dialect,
+//     operatorsAliases: 0,
+
+//     pool: {
+//       max: config.development.pool.max,
+//       min: config.development.pool.min,
+//       acquire: config.development.pool.acquire,
+//       idle: config.development.pool.idle,
+//     },
+//   }
+// );
 const sequelize = new Sequelize(
-  config.development.database,
-  config.development.username,
-  config.development.password,
+  config.production.database,
+  config.production.username,
+  config.production.password,
   {
-    host: config.development.host,
-    dialect: config.development.dialect,
+    host: config.production.host,
+    dialect: config.production.dialect,
     operatorsAliases: 0,
 
     pool: {
-      max: config.development.pool.max,
-      min: config.development.pool.min,
-      acquire: config.development.pool.acquire,
-      idle: config.development.pool.idle,
+      max: config.production.pool.max,
+      min: config.production.pool.min,
+      acquire: config.production.pool.acquire,
+      idle: config.production.pool.idle,
     },
   }
 );

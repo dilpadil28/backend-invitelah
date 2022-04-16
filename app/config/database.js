@@ -26,9 +26,9 @@ module.exports = {
     },
   },
   production: {
-    username: "root",
-    password: null,
-    database: "invitelah_production",
+    username: "invitela_root",
+    password: "g4aG5Rb6PDdT",
+    database: "invitela_production",
     host: "127.0.0.1",
     dialect: "mysql",
     pool: {
